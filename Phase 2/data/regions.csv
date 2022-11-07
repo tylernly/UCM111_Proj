@@ -1,0 +1,34 @@
+﻿re_regionId,re_regionName,re_regionLanguage
+1,America,English
+1,America,Spanish
+1,America,Chinese
+1,America,Vietnamese
+1,America,Tagalog
+1,America,French
+2,Africa,French
+2,Africa,English
+2,Africa,Arabic
+2,Africa,Swahili
+3,Asia,Korean
+3,Asia,Chinese
+3,Asia,Japanese
+3,Asia,Russian
+3,Asia,Vietnamese
+3,Asia,Thai
+3,Asia,Indonesian
+3,Asia,Hindi
+3,Asia,Bengali
+4,Europe,French
+4,Europe,Spanish
+4,Europe,English
+4,Europe,Polish
+4,Europe,Swedish
+4,Europe,Russian
+4,Europe,Italian
+4,Europe,German
+4,Europe,Turkish
+5,Middle East,Arabic
+5,Middle East,Persian
+5,Middle East,Turkish
+5,Middle East,Hebrew
+5,Middle East,Kurdish

@@ -96,7 +96,39 @@ def dropTable(_conn):
     print("++++++++++++++++++++++++++++++++++")
     print("Drop tables")
     
-    sql = "DROP TABLE IF EXISTS warehouse"
+    sql = "DROP TABLE IF EXISTS client"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS requests"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS marketing"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS project"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS video"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS region"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS demographic"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS reqDemo"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS reqRegion"
     _conn.execute(sql)
     _conn.commit()
 
@@ -182,7 +214,7 @@ def insert_video(_conn, _id, _file, _duration, _platform, _views,
 
 def insert_region(_conn, _id, _name, _language):
     try:
-        sql = """INSERT INTO region(reigon_id, region_name, region_language) 
+        sql = """INSERT INTO region(region_id, region_name, region_language) 
         VALUES (?,?,?)"""
         args = [_id, _name, _language]
         _conn.execute(sql, args)
