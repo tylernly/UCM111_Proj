@@ -174,7 +174,7 @@ WHERE m_teamname = "SOCIAL STARS"
 AND m_teamid = p_teamId
 AND v_videoprojectId = p_projectid
 AND v_videodemographicId = d_demographicid
-AND d_demographicname = "0 - 14 years";
+AND d_demographicname = "HIGH SCHOOL";
 
 SELECT " ";
 ----------------------
