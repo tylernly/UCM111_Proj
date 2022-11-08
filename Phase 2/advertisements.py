@@ -44,13 +44,13 @@ def createTable(_conn):
     _conn.execute(sql)
     _conn.commit()
 
-    sql = """CREATE TABLE marketing(t_teamid decimal(5,0) not null, 
-                               t_teamname char(100) not null)"""
+    sql = """CREATE TABLE marketing(m_teamid decimal(5,0) not null, 
+                               m_teamname char(100) not null)"""
     _conn.execute(sql)
     _conn.commit()
 
     sql = """CREATE TABLE project(p_projectid decimal(5,0) not null, 
-                               p_projectteamId decimal(5,0) not null,
+                               p_teamId decimal(5,0) not null,
                                p_projectrequestId decimal(5,0) not null,
                                p_projectcost decimal(10,0) not null)"""
     _conn.execute(sql)
