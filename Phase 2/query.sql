@@ -8,6 +8,7 @@ AND c_clientid = r_requestclientId
 AND r_requestid = rr_requestid
 AND rr_regionid = r_regionid;
 
+SELECT " ";
 
 ---------------------
 SELECT "2---------";
@@ -18,6 +19,7 @@ WHERE c_clientid = r_requestclientid
 AND r_requestbudget = (SELECT max(r_requestbudget) FROM requests)
 GROUP BY c_clientname;
 
+SELECT " ";
 ---------------------
 
 SELECT "3---------";
@@ -28,16 +30,18 @@ WHERE m_teamid = p_teamId
 AND v_videoprojectId = p_projectId
 AND m_teamname = 'SOCIAL STARS';
 
+SELECT " ";
 ---------------------
 
 SELECT "4---------";
---How many videos that target a region have the same language
+--How many videos that target a region have the same language as region
 SELECT r_regionname, COUNT(v_videoid)
 FROM video, region
 WHERE v_videolanguage = r_regionlanguage
 AND v_videoregionid = r_regionid
 GROUP BY r_regionname;
 
+SELECT " ";
 ----------------------
 
 SELECT "5---------";
@@ -46,20 +50,29 @@ SELECT v_videoplatform, avg(v_videoviews)
 FROM video
 GROUP BY v_videoplatform;
 
+SELECT " ";
 ----------------------
 
 SELECT "6---------";
 --Add a new video for project 2 that targets Europe and the language is Spanish
+SELECT DISTINCT(v_videoid), v_videoprojectId, r_regionname, v_videolanguage
+FROM video, region
+WHERE v_videoid = 26    
+AND r_regionid = v_videoregionId;
+
 INSERT INTO video(v_videoid, v_videofile, v_videoduration,
                 v_videoplatform, v_videoviews, v_videoregionId, 
                 v_videodemographicId,v_videoprojectId, v_videocost, v_videolanguage)
 VALUES('26','26','30','Google ADS','0','4','10','2','2000','Spanish');
+
+SELECT"Added new video for project 2"
 
 SELECT DISTINCT(v_videoid), v_videoprojectId, r_regionname, v_videolanguage
 FROM video, region
 WHERE v_videoid = 26    
 AND r_regionid = v_videoregionId;
 
+SELECT " ";
 --------------------
 
 SELECT "7----------";
@@ -72,11 +85,13 @@ GROUP BY m_teamname
 ORDER BY Effectiveness DESC
 LIMIT 1;
 
+SELECT " ";
 ---------------------
 
 SELECT "8-----------";
 --Delete projects where the cost went over the budget
 --Project 3 and 6 should have been deleted
+SELECT"Projects with cost over budget";
 SELECT p_projectId, p_projectcost, r_requestId, r_requestBudget
 FROM project, requests
 WHERE p_projectcost > r_requestbudget
@@ -93,6 +108,7 @@ SELECT p_projectId, p_projectcost, r_requestId, r_requestBudget
 FROM project, requests
 WHERE p_projectrequestId = r_requestId;
 
+SELECT " ";
 ---------------------
 
 SELECT "9------------";
@@ -110,6 +126,7 @@ SELECT r_requestid, r_requestbudget
 FROM requests
 WHERE r_requestid = 15;
 
+SELECT " ";
 ---------------------
 
 SELECT "10-----------";
@@ -131,6 +148,7 @@ FROM requests, client
 WHERE c_clientname = 'MARVEL STUDIOS'
 AND r_requestclientid = c_clientid;
 
+SELECT " ";
 -----------------------
 
 SELECT "11-----------";
@@ -141,6 +159,7 @@ FROM (SELECT v_videoPlatform, SUM(v_videoViews) as videoSum from video
 ORDER BY videoSum DESC  
 LIMIT 1;
 
+SELECT " ";
 -----------------------
 
 SELECT "12-----------";
@@ -153,6 +172,7 @@ AND v_videoProjectId = p_projectId
 AND v_videoDemographicId = d_demographicId
 AND d_demographicName = 'MIDDLE SCHOOL';
 
+SELECT " ";
 -------------------------
 
 SELECT "13-----------";
@@ -173,6 +193,7 @@ WHERE r_regionId not in (SELECT r_regionId
                          AND rr_regionId = r_regionId
                          AND c_clientId = r_requestclientId);
 
+SELECT " ";
 -------------------------
 
 SELECT "14-----------";
@@ -182,6 +203,7 @@ FROM video, demographic
 WHERE d_demographicname = 'MALE'
 AND d_demographicId = v_videoDemographicId;
 
+SELECT " ";
 --------------------------
 
 SELECT "15-----------";
@@ -202,6 +224,7 @@ WHERE m_teamname = 'TELEMARKETERS'
 AND p_teamId = m_teamId
 AND p_projectrequestId = r_requestId;
 
+SELECT " ";
 ---------------------------
 
 SELECT "16------------";
@@ -211,17 +234,19 @@ FROM project, marketing
 WHERE m_teamId = p_teamId
 AND m_teamName = 'MAGIC INFLUENCERS';
 
+SELECT " ";
 ---------------------------
 
 SELECT "17-----------";
---Demographic name with highest total views
-SELECT d_demographicName, MAX(v_videoViews)
+--Demographic name with video with highest views
+SELECT d_demographicName, v_videoViews
 FROM video, demographic
 WHERE v_videoDemoGraphicId = d_demographicId
 GROUP BY d_demographicId
-ORDER BY MAX(v_videoViews) DESC
+ORDER BY max(v_videoViews) DESC
 LIMIT 1;
 
+SELECT " ";
 ----------------------------
 
 SELECT "18-----------";
@@ -232,6 +257,7 @@ INSERT INTO reqDemo(rd_requestId, rd_demographicId)
 SELECT "Updated Connection";
 SELECT * FROM reqDemo WHERE rd_requestId = 15;
 
+SELECT " ";
 -----------------------------
 
 SELECT "19-----------";
@@ -256,10 +282,11 @@ FROM project, marketing
 WHERE p_teamId = m_teamId
 AND m_teamname = 'BIG TIME ADVERTS';
 
+SELECT " ";
 -------------------------
 
 SELECT "20-----------";
---Find projects who's videos does not cover all the regions requestd
+--Find projects who's videos does not cover all the regions requested
 SELECT DISTINCT p_projectId
 FROM (SELECT rr_regionId, p_projectId
     FROM reqregion, project
