@@ -52,7 +52,7 @@ def createTable(_conn):
     sql = """CREATE TABLE project(project_id decimal(5,0) not null, 
                                project_teamId decimal(5,0) not null,
                                project_requestId decimal(5,0) not null,
-                               project_cost decimal(10,0) not null )"""
+                               project_cost decimal(10,0) not null)"""
     _conn.execute(sql)
     _conn.commit()
 
@@ -61,11 +61,11 @@ def createTable(_conn):
                                video_duration decimal(5,0) not null,
                                video_platform char(20) not null,
                                video_views decimal(10,0) not null,
-                               video_cost decimal(10,0) not null,
-                               video_language char(20) not null,
                                video_regionId decimal(5,0),
                                video_demographicId decimal(5,0),
-                               video_projectId decimal(5,0) )"""
+                               video_projectId decimal(5,0),
+                               video_cost decimal(10,0) not null,
+                               video_language char(20) not null )"""
     _conn.execute(sql)
     _conn.commit()
 
