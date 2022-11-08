@@ -65,7 +65,7 @@ INSERT INTO video(v_videoid, v_videofile, v_videoduration,
                 v_videodemographicId,v_videoprojectId, v_videocost, v_videolanguage)
 VALUES('26','26','30','Google ADS','0','4','10','2','2000','Spanish');
 
-SELECT"Added new video for project 2"
+SELECT"Added new video for project 2";
 
 SELECT DISTINCT(v_videoid), v_videoprojectId, r_regionname, v_videolanguage
 FROM video, region
