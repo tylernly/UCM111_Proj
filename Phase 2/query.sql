@@ -146,11 +146,10 @@ WHERE r_requestid = 1;
 SELECT "Updated Requests";
 SELECT c_clientname, r_requestid, r_requestclientId
 FROM requests, client
-WHERE c_clientname = 'MARVEL STUDIOS'
-AND r_requestclientid = c_clientid;
+WHERE client_name = 'MARVEL STUDIOS'
+AND request_clientid = client_id;
 
-SELECT " ";
------------------------
+----------------------
 
 SELECT "11-----------";
 --Find the video platform with the highest total views

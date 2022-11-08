@@ -138,19 +138,76 @@ def dropTable(_conn):
 def populateTable(_conn):
     print("++++++++++++++++++++++++++++++++++")
     print("Populate table")
-   
+    sql = """.mode "csv"
+            .separator ","
+            .headers off
+
+            .import  'data/clients.csv' client
+            .import  'data/marketingteam.csv' marketing
+            .import  'data/requests.csv' requests
+            .import  'data/regions.csv' region
+            .import  'data/demographics.csv' demographic
+            .import  'data/reqRegion.csv' reqRegion
+            .import  'data/reqDemo.csv' reqDemo
+            .import  'data/projects.csv' project
+            .import  'data/videos.csv' video"""
     
     print("++++++++++++++++++++++++++++++++++")
 
-def insert_client(_conn, _id, _name):
+def sql1(_conn):
     try:
-        sql = """INSERT INTO client(client_id, client_name) 
-        VALUES (?,?);"""
-        args = [_id, _name]
-        _conn.execute(sql, args)
-        
-        _conn.commit()
-        print("success")
+        sql = """SELECT DISTINCT(region_name) 
+                FROM region, client, requests, reqRegion
+                WHERE client_name = 'UNIVERSAL STUDIOS'
+                AND client_id = request_clientId
+                AND request_id = rr_requestid
+                AND rr_regionid = region_id;"""
+        cur = _conn.cursor()
+        cur.execute(sql)
+        l = '{:>10}'.format("region")
+        print(l)
+        for row in rows:
+            l = '{:>10}'.format(row[0])
+            print(l)
+
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def sql2(_conn):
+    try:
+        sql = """SELECT client_name, max(request_budget)
+                FROM client, requests
+                WHERE client_id = request_clientid
+                AND request_budget = (SELECT max(request_budget) FROM requests)
+                GROUP BY client_name;"""
+        cur = _conn.cursor()
+        cur.execute(sql)
+        l = '{:>20} {:>10}'.format("client", "budget")
+        print(l)
+        for row in rows:
+            l = '{:20} {:>10}'.format(row[0])
+            print(l)
+
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def sql3(_conn):
+    try:
+        sql = """SELECT client_name, max(request_budget)
+                FROM client, requests
+                WHERE client_id = request_clientid
+                AND request_budget = (SELECT max(request_budget) FROM requests)
+                GROUP BY client_name;"""
+        cur = _conn.cursor()
+        cur.execute(sql)
+        l = '{:>20} {:>10}'.format("client", "budget")
+        print(l)
+        for row in rows:
+            l = '{:20} {:>10}'.format(row[0])
+            print(l)
+
     except Error as e:
         _conn.rollback()
         print(e)
@@ -250,16 +307,6 @@ def shortest_video_targeting_demo(_conn, _demographic):
         for row in rows:
             l = '{:>10} {:>10} {:>10}'.format(row[0],row[1],row[2])
             print(l)
-
-
-        sql = """INSERT INTO video(video_id, video_file, video_duration,
-                                    video_platform, video_views, video_regionId, 
-                                    video_demographicId, video_cost, video_language) 
-        VALUES (?,?,?,?,?,?,?,?,?)"""
-        args = [_id, _file, _duration, _platform, _views,
-                _language, _cost, _regionId, _demographicId]
-        _conn.execute(sql, args)
-        _conn.commit()
         print("success")
         
     except Error as e:
@@ -293,9 +340,6 @@ def new_project_with_marketing_request(_conn, _team,_request):
                                 project_requestId, project_cost) 
         VALUES (?,?,?,?);"""
         args = [newId, teamId, _request, 0]
-        sql = """INSERT INTO region(region_id, region_name, region_language) 
-        VALUES (?,?,?)"""
-        args = [_id, _name, _language]
         _conn.execute(sql, args)
         
         _conn.commit()
@@ -328,10 +372,14 @@ def total_projects_by_team(_conn, _team):
 
 def demographic_with_highest_views(_conn):
     try:
-        sql = """SELECT d_demographicName, MAX(v_videoViews)
-                 FROM video, demographic
-                 WHERE v_videoDemoGraphicId = d_demographicId
-                 GROUP BY d_demographicId
+        sql = """SELECT d_demographicName, MAX(total)
+                FROM
+                (
+                    SELECT d_demographicName, SUM(v_videoViews) as total
+                    FROM video, demographic
+                    WHERE v_videoDemoGraphicId = d_demographicId
+                    GROUP BY d_demographicId
+                );
                  """
         cur = _conn.cursor()
         cur.execute(sql)
@@ -389,15 +437,20 @@ def remove_marketing_and_projects(_conn, _team):
         for row in rows:
             teamId = row[0]
 
+        sql = """DELETE FROM projects WHERE p_teamId = ?"""
         sql = """DELETE FROM projects WHERE p_teamId = ? 
                 """
-                 
+
         args = [teamId]
         _conn.execute(sql, args)
         
         _conn.commit()
 
+
+       sql = """DELETE FROM marketing WHERE m_teamName = ?"""
+
        #sql = """DELETE FROM marketing WHERE m_teamName = ?"""
+
         args = [_team]
         _conn.execute(sql, args)
         
