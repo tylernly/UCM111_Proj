@@ -146,13 +146,15 @@ WHERE r_requestid = 1;
 SELECT "Updated Requests";
 SELECT c_clientname, r_requestid, r_requestclientId
 FROM requests, client
-WHERE client_name = 'MARVEL STUDIOS'
-AND request_clientid = client_id;
+WHERE c_clientname = 'MARVEL STUDIOS'
+AND r_requestclientid = c_clientid;
 
+SELECT " ";
 ----------------------
 
 SELECT "11-----------";
---Find the video platform with the highest total views
+--List the video platform with the highest total views
+
 SELECT v_videoPlatform, videoSum
 FROM (SELECT v_videoPlatform, SUM(v_videoViews) as videoSum from video
         GROUP BY v_videoPlatform) 
@@ -160,83 +162,81 @@ ORDER BY videoSum DESC
 LIMIT 1;
 
 SELECT " ";
------------------------
+----------------------
 
 SELECT "12-----------";
---How many videos were produce by team Marketers that targeted Middle Schoolers
-SELECT COUNT(v_videoId)
+--How many videos were produced by marketing team
+--SOCIAL STARS and targets demographic "0 - 14 years"
+
+SELECT COUNT(v_videoid)
 FROM video, marketing, project, demographic
-WHERE m_teamName = 'MARKETERS'
-AND m_teamID = p_teamId
-AND v_videoProjectId = p_projectId
-AND v_videoDemographicId = d_demographicId
-AND d_demographicName = 'MIDDLE SCHOOL';
+WHERE m_teamname = "SOCIAL STARS"
+AND m_teamid = p_teamId
+AND v_videoprojectId = p_projectid
+AND v_videodemographicId = d_demographicid
+AND d_demographicname = "0 - 14 years";
 
 SELECT " ";
--------------------------
+----------------------
 
 SELECT "13-----------";
---What regions have not been requested by M&M or Dove
+--Regions who have not been requested by
+--MCDONALDS or BURGER KING
+
 SELECT DISTINCT(r_regionName)
 FROM region
 WHERE r_regionId not in (SELECT r_regionId 
                          FROM region, client, requests, reqregion
-                         WHERE c_clientname = 'M&M'
+                         WHERE c_clientname = 'MCDONALDS'
                          AND r_requestid = rr_requestId
                          AND rr_regionId = r_regionId
                          AND c_clientId = r_requestclientId
                          UNION
                          SELECT r_regionId 
                          FROM region, client, requests, reqregion
-                         WHERE c_clientname = 'DOVE'
+                         WHERE c_clientname = 'BURGER KING'
                          AND r_requestid = rr_requestId
                          AND rr_regionId = r_regionId
                          AND c_clientId = r_requestclientId);
 
 SELECT " ";
--------------------------
+
+----------------------
 
 SELECT "14-----------";
---Video Id for lowest duration video targeting Male demographic 
-SELECT v_videoId, v_videoFile, MIN(v_videoDuration)
+--Video with the lowest duration targeting females
+
+SELECT v_videoid, v_videofile, MIN(v_videoduration)
 FROM video, demographic
-WHERE d_demographicname = 'MALE'
-AND d_demographicId = v_videoDemographicId;
+WHERE d_demographicname = "FEMALE"
+AND d_demographicid = v_videodemographicId;
 
 SELECT " ";
---------------------------
+----------------------
 
 SELECT "15-----------";
-SELECT m_teamname, p_projectid, p_projectrequestId
-FROM requests, marketing, project
-WHERE m_teamname = 'TELEMARKETERS'
-AND p_teamId = m_teamId
-AND p_projectrequestId = r_requestId;
---Create new project tied to team Telemarketers and request id 7
+--Create a new project tied to marketing team 
+--MAGIC INFLUENCERS working on request ID 8
+
 INSERT INTO project(p_projectid, p_teamId,
-                    p_projectrequestId, p_projectcost) 
-        VALUES (16,3,7,100000);
-SELECT "Created new project for Telemarketers";
+                        p_projectrequestId, p_projectcost) 
+VALUES (100,4,8,0);
 
-SELECT m_teamname, p_projectid, p_projectrequestId
-FROM requests, marketing, project
-WHERE m_teamname = 'TELEMARKETERS'
-AND p_teamId = m_teamId
-AND p_projectrequestId = r_requestId;
+SELECT"NEW PROJECT";
+SELECT * FROM project WHERE p_projectid = 100;
 
 SELECT " ";
----------------------------
+----------------------
 
-SELECT "16------------";
---Total projects created by marketing team Magic Influencers
---6 got deleted in previouse query
-SELECT m_teamName, COUNT(p_projectId)
+SELECT "16-----------";
+--Total projects made by marketing team TELEMARKETERS
+SELECT COUNT(p_projectid)
 FROM project, marketing
-WHERE m_teamId = p_teamId
-AND m_teamName = 'MAGIC INFLUENCERS';
+WHERE m_teamid = p_teamId
+AND m_teamname = "TELEMARKETERS";
 
 SELECT " ";
----------------------------
+----------------------
 
 SELECT "17-----------";
 --Demographic name with video with highest views
@@ -248,23 +248,25 @@ ORDER BY v_videoViews DESC
 LIMIT 1;
 
 SELECT " ";
-----------------------------
+
+----------------------
 
 SELECT "18-----------";
---Create new connection between demographic Male and request id 15
-SELECT * FROM reqDemo WHERE rd_requestId = 15;
+--Add middle school students to request 4
+SELECT * FROM reqDemo WHERE rd_requestId = 4;
 INSERT INTO reqDemo(rd_requestId, rd_demographicId) 
-        VALUES (15,4);
+        VALUES (4,8);
 
 SELECT "Updated Connection";
 
-SELECT * FROM reqDemo WHERE rd_requestId = 15;
+SELECT * FROM reqDemo WHERE rd_requestId = 4;
 
 SELECT " ";
------------------------------
+
+----------------------
 
 SELECT "19-----------";
---Remove Marketing Team Big Time Adverts and projects by them
+--Remove BIG TIME ADVERTS and all projects by them
 SELECT m_teamname, p_projectId
 FROM project, marketing
 WHERE p_teamId = m_teamId
@@ -286,16 +288,20 @@ WHERE p_teamId = m_teamId
 AND m_teamname = 'BIG TIME ADVERTS';
 
 SELECT " ";
--------------------------
+
+----------------------
 
 SELECT "20-----------";
---Find projects who's videos does not cover all the regions requested
-SELECT DISTINCT p_projectId
-FROM (SELECT rr_regionId, p_projectId
-    FROM reqregion, project
+--Projects who don't cover all the requested regions
+SELECT DISTINCT p_projectid
+FROM
+(
+    SELECT rr_regionId, p_projectid
+    FROM reqRegion, project
     WHERE rr_requestId = p_projectrequestId
     EXCEPT
-    SELECT v_videoRegionId, p_projectId
+    SELECT v_videoregionId, p_projectid
     FROM project, video
-    WHERE v_videoProjectId = p_projectId
-    ORDER BY p_projectId ASC);
+    WHERE v_videoprojectId = p_projectid
+    ORDER BY p_projectid ASC
+);

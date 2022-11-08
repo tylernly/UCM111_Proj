@@ -447,7 +447,7 @@ def remove_marketing_and_projects(_conn, _team):
         _conn.commit()
 
 
-       sql = """DELETE FROM marketing WHERE m_teamName = ?"""
+       #sql = """DELETE FROM marketing WHERE m_teamName = ?"""
 
        #sql = """DELETE FROM marketing WHERE m_teamName = ?"""
 
