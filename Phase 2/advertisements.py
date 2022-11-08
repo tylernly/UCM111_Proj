@@ -52,7 +52,7 @@ def createTable(_conn):
     sql = """CREATE TABLE project(project_id decimal(5,0) not null, 
                                project_teamId decimal(5,0) not null,
                                project_requestId decimal(5,0) not null,
-                               project_cost decimal(10,0) not null )"""
+                               project_cost decimal(10,0) not null)"""
     _conn.execute(sql)
     _conn.commit()
 
@@ -61,11 +61,11 @@ def createTable(_conn):
                                video_duration decimal(5,0) not null,
                                video_platform char(20) not null,
                                video_views decimal(10,0) not null,
-                               video_cost decimal(10,0) not null,
-                               video_language char(20) not null,
                                video_regionId decimal(5,0),
                                video_demographicId decimal(5,0),
-                               video_projectId decimal(5,0) )"""
+                               video_projectId decimal(5,0),
+                               video_cost decimal(10,0) not null,
+                               video_language char(20) not null )"""
     _conn.execute(sql)
     _conn.commit()
 
@@ -96,7 +96,39 @@ def dropTable(_conn):
     print("++++++++++++++++++++++++++++++++++")
     print("Drop tables")
     
-    sql = "DROP TABLE IF EXISTS warehouse"
+    sql = "DROP TABLE IF EXISTS client"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS requests"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS marketing"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS project"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS video"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS region"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS demographic"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS reqDemo"
+    _conn.execute(sql)
+    _conn.commit()
+
+    sql = "DROP TABLE IF EXISTS reqRegion"
     _conn.execute(sql)
     _conn.commit()
 
@@ -106,8 +138,8 @@ def dropTable(_conn):
 def populateTable(_conn):
     print("++++++++++++++++++++++++++++++++++")
     print("Populate table")
+   
     
-
     print("++++++++++++++++++++++++++++++++++")
 
 def insert_client(_conn, _id, _name):
@@ -202,6 +234,7 @@ def regions_not_requested_by_two_clients(_conn, _clientA, _clientB):
 
 def shortest_video_targeting_demo(_conn, _demographic):
     try:
+
         sql = """SELECT v_videoId, v_videoFile, MIN(v_videoDuration)
                 FROM video, demographic
                 WHERE d_demographic = ?
@@ -218,12 +251,24 @@ def shortest_video_targeting_demo(_conn, _demographic):
             l = '{:>10} {:>10} {:>10}'.format(row[0],row[1],row[2])
             print(l)
 
-    except Error as e:
+
+        sql = """INSERT INTO video(video_id, video_file, video_duration,
+                                    video_platform, video_views, video_regionId, 
+                                    video_demographicId, video_cost, video_language) 
+        VALUES (?,?,?,?,?,?,?,?,?)"""
+        args = [_id, _file, _duration, _platform, _views,
+                _language, _cost, _regionId, _demographicId]
+        _conn.execute(sql, args)
+        _conn.commit()
+        print("success")
+        
+  except Error as e:
         _conn.rollback()
         print(e)
 
 def new_project_with_marketing_request(_conn, _team,_request):
     try:
+
         #find ID
         sql = """SELECT MAX(p_projectId) FROM project"""
         cur = _conn.cursor()
@@ -248,6 +293,9 @@ def new_project_with_marketing_request(_conn, _team,_request):
                                 project_requestId, project_cost) 
         VALUES (?,?,?,?);"""
         args = [newId, teamId, _request, 0]
+        sql = """INSERT INTO region(region_id, region_name, region_language) 
+        VALUES (?,?,?)"""
+        args = [_id, _name, _language]
         _conn.execute(sql, args)
         
         _conn.commit()
