@@ -257,7 +257,7 @@ SELECT * FROM reqDemo WHERE rd_requestId = 4;
 INSERT INTO reqDemo(rd_requestId, rd_demographicId) 
         VALUES (4,8);
 
-SELECT "Updated Connection";
+SELECT "CREATED CONNECTION WITH";
 
 SELECT * FROM reqDemo WHERE rd_requestId = 4;
 
@@ -267,6 +267,7 @@ SELECT " ";
 
 SELECT "19-----------";
 --Remove BIG TIME ADVERTS and all projects by them
+SELECT"Before Delete";
 SELECT m_teamname, p_projectId
 FROM project, marketing
 WHERE p_teamId = m_teamId
@@ -280,7 +281,7 @@ DELETE FROM marketing
 WHERE m_teamname = 'BIG TIME ADVERTS';
 
 
-SELECT "Deleted Big Time Adverts and projects";
+SELECT "After Delete";
 
 SELECT m_teamname, p_projectId
 FROM project, marketing
