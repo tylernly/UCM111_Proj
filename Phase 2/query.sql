@@ -121,3 +121,156 @@ SELECT client_name, request_id, request_clientId
 FROM requests, client
 WHERE client_name = 'MARVEL STUDIOS'
 AND request_clientid = client_id;
+
+----------------------
+
+SELECT "11-----------";
+--List the video platform with the highest total views
+
+SELECT video_platform
+FROM
+(
+    SELECT video_platform, MAX(video_views)
+    FROM video
+    GROUP BY video_platform
+);
+
+----------------------
+
+SELECT "12-----------";
+--How many videos were produced by marketing team
+--SOCIAL STARS and targets demographic "0 - 14 years"
+
+SELECT COUNT(video_id)
+FROM video, marketing, project, demographic
+WHERE team_name = "SOCIAL STARS"
+AND team_id = project_teamId
+AND video_projectId = project_id
+AND video_demographicId = demographic_id
+AND demographic_name = "0 - 14 years";
+
+----------------------
+
+SELECT "13-----------";
+--Regions who have not been requested by
+--MCDONALDS or BURGER KING
+
+SELECT region_name
+FROM region
+EXCLUDE
+SELECT region_name
+FROM region, request, reqregion, region
+WHERE client_name = "MCDONALDS"
+AND client_id  = request_clientId
+AND request_id = rr_requestId
+AND rr_regionId = region_id
+EXCLUDE
+SELECT r_regionName
+FROM region, request, reqregion, region
+WHERE client_name = "BURGER KING"
+AND client_id  = request_clientId
+AND request_id = rr_requestId
+AND rr_regionId = region_id;
+
+----------------------
+
+SELECT "14-----------";
+--Video with the lowest duration targeting females
+
+SELECT video_id, video_file, MIN(video_duration)
+FROM video, demographic
+WHERE demographic_name = "FEMALE"
+AND demographic_id = video_demographicId;
+
+----------------------
+
+SELECT "15-----------";
+--Create a new project tied to marketing team 
+--MAGIC INFLUENCERS working on request ID 8
+
+INSERT INTO project(project_id, project_teamId,
+                        project_requestId, project_cost) 
+VALUES (100,4,8,0);
+
+SELECT"NEW PROJECT"
+SELECT * FROM project WHERE project_id = 100;
+
+----------------------
+
+SELECT "16-----------";
+--Total projects made by marketing team TELEMARKETERS
+SELECT COUNT(project_id)
+FROM project, marketing
+WHERE team_id = project_teamId
+AND team_name = "TELEMARKETERS";
+
+----------------------
+
+SELECT "17-----------";
+--Demographic with the highest views
+SELECT demographic_name, MAX(total)
+FROM
+(
+    SELECT demographic_name, SUM(video_views) as total
+    FROM video, demographic
+    WHERE video_demographicId = demographic_id
+    GROUP BY demographic_id;
+);
+
+----------------------
+
+SELECT "18-----------";
+--Add middle school students to request 4
+INSERT INTO reqDemo(rd_requestId, rd_demographicId) 
+VALUES (8,4);
+
+SELECT "CREATED CONNECTION WITH"
+SELECT *
+FROM reqDemo
+WHERE rd_requestId = 8
+AND rd_requestId = 4;
+
+----------------------
+
+SELECT "19-----------";
+--Remove BIG TIME ADVERTS and all projects by them
+SELECT "before DELETE"
+SELECT *
+FROM marketing
+WHERE team_name = "BIG TIME ADVERTS";
+SELECT *
+FROM projects, marketing
+WHERE team_id = project_teamId
+AND team_name = "BIG TIME ADVERTS";
+
+DELETE FROM projects,marketing
+WHERE p_teamId = m_teamId
+AND m_teamName = "BIG TIME ADVERTS";
+
+DELETE FROM marketing
+WHERE m_teamName = "BIG TIME ADVERTS";
+
+SELECT "after DELETE"
+SELECT *
+FROM marketing
+WHERE team_name = "BIG TIME ADVERTS";
+SELECT *
+FROM projects, marketing
+WHERE team_id = project_teamId
+AND team_name = "BIG TIME ADVERTS";
+
+----------------------
+
+SELECT "20-----------";
+--Projects who don't cover all the requested regions
+SELECT DISTINCT project_id
+FROM
+(
+    SELECT rr_regionId, project_id
+    FROM reqRegion, project
+    WHERE rr_requestId = project_requestId
+    EXCLUDE
+    SELECT video_regionId, project_id
+    FROM project, video
+    WHERE video_projectId = project_id
+);
