@@ -1,74 +1,74 @@
 SELECT "1---------";
 .headers off
 --Select regions targeted by client Universal Studios
-SELECT DISTINCT(region_name) 
+SELECT DISTINCT(r_regionname) 
 FROM region, client, requests, reqRegion
-WHERE client_name = 'UNIVERSAL STUDIOS'
-AND client_id = request_clientId
-AND request_id = rr_requestid
-AND rr_regionid = region_id;
+WHERE c_clientname = 'UNIVERSAL STUDIOS'
+AND c_clientid = r_requestclientId
+AND r_requestid = rr_requestid
+AND rr_regionid = r_regionid;
 
 
 ---------------------
 SELECT "2---------";
 --Select Client with the biggest request budget
-SELECT client_name, max(request_budget)
+SELECT c_clientname, max(r_requestbudget)
 FROM client, requests
-WHERE client_id = request_clientid
-AND request_budget = (SELECT max(request_budget) FROM requests)
-GROUP BY client_name;
+WHERE c_clientid = r_requestclientid
+AND r_requestbudget = (SELECT max(r_requestbudget) FROM requests)
+GROUP BY c_clientname;
 
 ---------------------
 
 SELECT "3---------";
 --Total sum of duration for all videos made by team Social Stars
-SELECT sum(video_duration)
+SELECT sum(v_videoduration)
 FROM video, marketing, project
-WHERE team_id = project_teamId
-AND video_projectId = project_Id
-AND team_name = 'SOCIAL STARS';
+WHERE t_teamid = p_projectteamId
+AND v_videoprojectId = p_projectId
+AND t_teamname = 'SOCIAL STARS';
 
 ---------------------
 
 SELECT "4---------";
 --How many videos that target a region have the same language
-SELECT region_name, COUNT(video_id)
+SELECT r_regionname, COUNT(v_videoid)
 FROM video, region
-WHERE video_language = region_language
-AND video_regionid = region_id
-GROUP BY region_name;
+WHERE v_videolanguage = r_regionlanguage
+AND v_videoregionid = r_regionid
+GROUP BY r_regionname;
 
 ----------------------
 
 SELECT "5---------";
 --Average amount of views for every video platform
-SELECT video_platform, avg(video_views)
+SELECT v_videoplatform, avg(v_videoviews)
 FROM video
-GROUP BY video_platform;
+GROUP BY v_videoplatform;
 
 ----------------------
 
 SELECT "6---------";
 --Add a new video for project 2 that targets Europe and the language is Spanish
-INSERT INTO video(video_id, video_file, video_duration,
-                video_platform, video_views, video_regionId, 
-                video_demographicId,video_projectId, video_cost, video_language)
+INSERT INTO video(v_videoid, v_videofile, v_videoduration,
+                v_videoplatform, v_videoviews, v_videoregionId, 
+                v_videodemographicId,v_videoprojectId, v_videocost, v_videolanguage)
 VALUES('26','26','30','Google ADS','0','4','10','2','2000','Spanish');
 
-SELECT DISTINCT(video_id), video_projectId, region_name, video_language
+SELECT DISTINCT(v_videoid), v_videoprojectId, r_regionname, v_videolanguage
 FROM video, region
-WHERE video_id = 26    
-AND region_id = video_regionId;
+WHERE v_videoid = 26    
+AND r_regionid = v_videoregionId;
 
 --------------------
 
 SELECT "7----------";
 --Find the the team with the most cost effective video being the ratio of (cost/views)
-SELECT team_name, max(video_cost/video_views) * 1.0 as Effectiveness
+SELECT t_teamname, max(v_videocost/v_videoviews) * 1.0 as Effectiveness
 FROM video, project , marketing
-WHERE video_projectId = project_Id
-AND project_teamId = team_Id
-GROUP BY team_name
+WHERE v_videoprojectId = p_projectId
+AND p_projectteamId = t_teamId
+GROUP BY t_teamname
 ORDER BY Effectiveness DESC
 LIMIT 1;
 
@@ -77,10 +77,10 @@ LIMIT 1;
 SELECT "8-----------";
 --Delete projects where the cost went over the budget
 DELETE FROM project
-WHERE project_id in (SELECT project_id
+WHERE p_projectid in (SELECT p_projectid
                     FROM project, requests
-                    WHERE project_cost > request_budget
-                    AND project_requestId = request_Id);
+                    WHERE p_projectcost > r_requestbudget
+                    AND p_projectrequestId = r_requestId);
 
 SELECT * from project;
 
@@ -88,18 +88,18 @@ SELECT * from project;
 
 SELECT "9------------";
 --Change budget for request 15 to 5000
-SELECT request_id, request_budget
+SELECT r_requestid, r_requestbudget
 FROM requests
-WHERE request_id = 15;
+WHERE r_requestid = 15;
 
 UPDATE requests
-SET request_budget = 5000
-WHERE request_id = 15;
+SET r_requestbudget = 5000
+WHERE r_requestid = 15;
 
 SELECT "Updated budget";
-SELECT request_id, request_budget
+SELECT r_requestid, r_requestbudget
 FROM requests
-WHERE request_id = 15;
+WHERE r_requestid = 15;
 
 ---------------------
 
@@ -107,17 +107,17 @@ SELECT "10-----------";
 --Change all client Id's for requests made by Universal Studios 
 --to Marvel Studios
 
-SELECT client_name, request_id, request_clientId
+SELECT c_clientname, r_requestid, r_requestclientId
 FROM requests, client
-WHERE client_name = 'UNIVERSAL STUDIOS'
-AND request_clientid = client_id;
+WHERE c_clientname = 'UNIVERSAL STUDIOS'
+AND r_requestclientid = c_clientid;
 
 UPDATE requests
-SET request_clientId = 2
-WHERE request_id = 1;
+SET r_requestclientId = 2
+WHERE r_requestid = 1;
 
 SELECT "Updated Requests";
-SELECT client_name, request_id, request_clientId
+SELECT c_clientname, r_requestid, r_requestclientId
 FROM requests, client
-WHERE client_name = 'MARVEL STUDIOS'
-AND request_clientid = client_id;
+WHERE c_clientname = 'MARVEL STUDIOS'
+AND r_requestclientid = c_clientid;

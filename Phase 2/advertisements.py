@@ -33,50 +33,50 @@ def createTable(_conn):
     print("++++++++++++++++++++++++++++++++++")
     print("Create table")
 
-    sql = """CREATE TABLE client(client_id decimal(5,0) not null, 
-                               client_name char(100) not null )"""
+    sql = """CREATE TABLE client(c_clientid decimal(5,0) not null, 
+                               c_clientname char(100) not null )"""
     _conn.execute(sql)
     _conn.commit()
 
-    sql = """CREATE TABLE requests(request_id decimal(5,0) not null, 
-                               request_clientId decimal(5,0) not null,
-                               request_budget decimal(10,0) )"""
+    sql = """CREATE TABLE requests(r_requestid decimal(5,0) not null, 
+                               r_requestclientId decimal(5,0) not null,
+                               r_requestbudget decimal(10,0) )"""
     _conn.execute(sql)
     _conn.commit()
 
-    sql = """CREATE TABLE marketing(team_id decimal(5,0) not null, 
-                               team_name char(100) not null)"""
+    sql = """CREATE TABLE marketing(t_teamid decimal(5,0) not null, 
+                               t_teamname char(100) not null)"""
     _conn.execute(sql)
     _conn.commit()
 
-    sql = """CREATE TABLE project(project_id decimal(5,0) not null, 
-                               project_teamId decimal(5,0) not null,
-                               project_requestId decimal(5,0) not null,
-                               project_cost decimal(10,0) not null)"""
+    sql = """CREATE TABLE project(p_projectid decimal(5,0) not null, 
+                               p_projectteamId decimal(5,0) not null,
+                               p_projectrequestId decimal(5,0) not null,
+                               p_projectcost decimal(10,0) not null)"""
     _conn.execute(sql)
     _conn.commit()
 
-    sql = """CREATE TABLE video(video_id decimal(5,0) not null, 
-                               video_file char(15) not null,
-                               video_duration decimal(5,0) not null,
-                               video_platform char(20) not null,
-                               video_views decimal(10,0) not null,
-                               video_regionId decimal(5,0),
-                               video_demographicId decimal(5,0),
-                               video_projectId decimal(5,0),
-                               video_cost decimal(10,0) not null,
-                               video_language char(20) not null )"""
+    sql = """CREATE TABLE video(v_videoid decimal(5,0) not null, 
+                               v_videofile char(15) not null,
+                               v_videoduration decimal(5,0) not null,
+                               v_videoPlatform char(20) not null,
+                               v_videoViews decimal(10,0) not null,
+                               v_videoregionId decimal(5,0),
+                               v_videodemographicId decimal(5,0),
+                               v_videoprojectId decimal(5,0),
+                               v_videocost decimal(10,0) not null,
+                               v_videolanguage char(20) not null )"""
     _conn.execute(sql)
     _conn.commit()
 
-    sql = """CREATE TABLE region(region_id decimal(5,0) not null, 
-                               region_name char(20) not null,
-                               region_language char(20) not null )"""
+    sql = """CREATE TABLE region(r_regionid decimal(5,0) not null, 
+                               r_regionname char(20) not null,
+                               r_regionlanguage char(20) not null )"""
     _conn.execute(sql)
     _conn.commit()
 
-    sql = """CREATE TABLE demographic(demographic_id decimal(5,0) not null, 
-                               demographic_name decimal(5,0) not null )"""
+    sql = """CREATE TABLE demographic(d_demographicid decimal(5,0) not null, 
+                               d_demographicname decimal(5,0) not null )"""
     _conn.execute(sql)
     _conn.commit()
     
@@ -239,7 +239,7 @@ def shortest_video_targeting_demo(_conn, _demographic):
                 FROM video, demographic
                 WHERE d_demographic = ?
                 AND d_demographicId = v_videoDemographicId;
-                 """
+                """
         args = [_demographic]
         cur = _conn.cursor()
         cur.execute(sql, args)
@@ -262,7 +262,7 @@ def shortest_video_targeting_demo(_conn, _demographic):
         _conn.commit()
         print("success")
         
-  except Error as e:
+    except Error as e:
         _conn.rollback()
         print(e)
 
@@ -389,15 +389,15 @@ def remove_marketing_and_projects(_conn, _team):
         for row in rows:
             teamId = row[0]
 
-        sql = """DELETE FROM projects WHERE p_teamId = ?"""
-                 """
+        sql = """DELETE FROM projects WHERE p_teamId = ? 
+                """
+                 
         args = [teamId]
         _conn.execute(sql, args)
         
         _conn.commit()
 
-       sql = """DELETE FROM marketing WHERE m_teamName = ?"""
-                 """
+       #sql = """DELETE FROM marketing WHERE m_teamName = ?"""
         args = [_team]
         _conn.execute(sql, args)
         
