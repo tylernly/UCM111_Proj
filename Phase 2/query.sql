@@ -241,11 +241,11 @@ SELECT " ";
 
 SELECT "17-----------";
 --Demographic name with video with highest views
-SELECT d_demographicName, v_videoViews
+SELECT d_demographicName, max(v_videoViews)
 FROM video, demographic
 WHERE v_videoDemoGraphicId = d_demographicId
 GROUP BY d_demographicId
-ORDER BY max(v_videoViews) DESC
+ORDER BY v_videoViews DESC
 LIMIT 1;
 
 SELECT " ";
