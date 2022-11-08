@@ -102,6 +102,7 @@ WHERE p_projectid in (SELECT p_projectid
                     FROM project, requests
                     WHERE p_projectcost > r_requestbudget
                     AND p_projectrequestId = r_requestId);
+
 SELECT"Removed projects with cost over budget";
 
 SELECT p_projectId, p_projectcost, r_requestId, r_requestBudget 
@@ -229,6 +230,7 @@ SELECT " ";
 
 SELECT "16------------";
 --Total projects created by marketing team Magic Influencers
+--6 got deleted in previouse query
 SELECT m_teamName, COUNT(p_projectId)
 FROM project, marketing
 WHERE m_teamId = p_teamId
@@ -254,7 +256,9 @@ SELECT "18-----------";
 SELECT * FROM reqDemo WHERE rd_requestId = 15;
 INSERT INTO reqDemo(rd_requestId, rd_demographicId) 
         VALUES (15,4);
+
 SELECT "Updated Connection";
+
 SELECT * FROM reqDemo WHERE rd_requestId = 15;
 
 SELECT " ";
