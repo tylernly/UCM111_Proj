@@ -199,8 +199,8 @@ def insert_video(_conn, _id, _file, _duration, _platform, _views,
                 _language, _cost, _regionId, _demographicId):
     try:
         sql = """INSERT INTO video(video_id, video_file, video_duration,
-                                   video_platform, video_views, video_language,
-                                   video_cost, video_regionId, video_demographicId) 
+                                    video_platform, video_views, video_regionId, 
+                                    video_demographicId, video_cost, video_language) 
         VALUES (?,?,?,?,?,?,?,?,?)"""
         args = [_id, _file, _duration, _platform, _views,
                 _language, _cost, _regionId, _demographicId]
