@@ -3,7 +3,7 @@ SELECT "1---------";
 
 SELECT DISTINCT(region_name) 
 FROM region, client, requests, reqRegion
-WHERE client_name = "UNIVERSAL STUDIOS"
+WHERE client_name = 'UNIVERSAL STUDIOS'
 AND client_id = request_clientId
 AND request_id = rr_requestid
 AND rr_regionid = region_id;
@@ -32,10 +32,11 @@ AND team_name = 'SOCIAL STARS';
 
 SELECT "4---------";
 
-SELECT COUNT(video_id)
+SELECT region_name, COUNT(video_id)
 FROM video, region
 WHERE video_language = region_language
-AND video_regionid = region_id;
+AND video_regionid = region_id
+GROUP BY region_name;
 
 ----------------------
 
@@ -51,10 +52,10 @@ SELECT "6---------";
 
 INSERT INTO video(video_id, video_file, video_duration,
                 video_platform, video_views, video_regionId, 
-                video_demographicId, video_cost, video_language)
-VALUES('26','26','30','Google ADS','0','4','10','2000','Spanish');
+                video_demographicId,video_projectId, video_cost, video_language)
+VALUES('26','26','30','Google ADS','0','4','10','2','2000','Spanish');
 
-SELECT DISTINCT(region_name), video_language
+SELECT DISTINCT(video_id), video_projectId, region_name, video_language
 FROM video, region
 WHERE video_id = 26    
 AND region_id = video_regionId;
@@ -68,8 +69,8 @@ FROM video, project , marketing
 WHERE video_projectId = project_Id
 AND project_teamId = team_Id
 GROUP BY team_name
-ORDER BY Effectiveness Desc
-Limit 1;
+ORDER BY Effectiveness DESC
+LIMIT 1;
 
 ---------------------
 
