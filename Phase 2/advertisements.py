@@ -138,8 +138,8 @@ def dropTable(_conn):
 def populateTable(_conn):
     print("++++++++++++++++++++++++++++++++++")
     print("Populate table")
+   
     
-
     print("++++++++++++++++++++++++++++++++++")
 
 def insert_client(_conn, _id, _name):
