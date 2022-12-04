@@ -245,7 +245,7 @@ FROM (
                 SELECT table1.m_teamname, table1.r_regionname, table1.d_demographicname,
                 (compIncome+tvIncome+phoneIncome-compCost-tvCost-phoneCost) as profit
                 FROM (
-                        SELECT m_teamname, r_regionname, d_demographicname, (0.05 * SUM(v_videoviews)) as compIncome, SUM(v_videoCost) as compCost
+                        SELECT m_teamName, r_regionName, d_demographicName, (0.05 * SUM(v_videoviews)) as compIncome, SUM(v_videoCost) as compCost
                         FROM marketing, project, video, region, demographic
                         WHERE m_teamid = p_teamId
                         AND v_videoProjectId = p_projectId
@@ -269,12 +269,7 @@ FROM (
                         AND v_videoDemographicId = d_demographicId
                         AND v_videoPlatform = "phone"
                         GROUP BY r_regionname, d_demographicname ) as table3
-                WHERE table1.m_teamname = table2.m_teamname
-                AND table2.m_teamname = table3.m_teamname
-                AND table1.r_regionname = table2.r_regionname
-                AND table2.r_regionname = table3.r_regionname
-                AND table1.d_demographicname = table2.d_demographicname
-                AND table2.d_demographicname = table3.d_demographicname
+                GROUP BY table1.m_teamname, table1.r_regionname, table1.d_demographicname
         )
         GROUP BY m_teamname
 ) as mProfitTable,
@@ -286,6 +281,7 @@ FROM (
         AND rr_regionId = region.r_regionId
         AND rd_requestId = r_requestId
         AND rd_demographicId = d_demographicId
+        GROUP BY c_clientName, r_regionName, d_demographicName
 ) as mRequestedTable
 WHERE mProfitTable.r_regionName = mRequestedTable.r_regionName
 AND mProfitTable.d_demographicName = mRequestedTable.d_demographicName;

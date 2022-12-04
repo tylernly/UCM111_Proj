@@ -11,4 +11,4 @@
 .import  'newdata/CSE111reqRegion.csv' reqRegion
 .import  'newdata/CSE111reqDemo.csv' reqDemo
 .import  'newdata/CSE111projects.csv' project
-.import  'newdata/CSE111videos.csv' video
+.import  'newdata/CSE111video.csv' video

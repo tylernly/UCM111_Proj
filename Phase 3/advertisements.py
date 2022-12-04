@@ -56,27 +56,27 @@ p_projectcost decimal(10,0) not null)"""
     _conn.execute(sql)
     _conn.commit()
 
-    sql = """CREATE TABLE video(v_videoid decimal(5,0) not null, 
-v_videofile char(15) not null,
-v_videoduration decimal(5,0) not null,
+    sql = """CREATE TABLE video(v_videoId decimal(5,0) not null, 
+v_videoFile char(30) not null,
+v_videoDuration decimal(5,0) not null,
 v_videoPlatform char(20) not null,
-v_videoViews decimal(10,0) not null,
-v_videoregionId decimal(5,0),
-v_videodemographicId decimal(5,0),
-v_videoprojectId decimal(5,0),
-v_videocost decimal(10,0) not null,
-v_videolanguage char(20) not null )"""
+v_videoViews decimal(15,0) not null,
+v_videoLanguage char(20) not null,
+v_videoCost decimal(15,0) not null,
+v_videoRegionId decimal(5,0),
+v_videoDemographicId decimal(5,0),
+v_videoProjectId decimal(5,0) )"""
     _conn.execute(sql)
     _conn.commit()
 
     sql = """CREATE TABLE region(r_regionid decimal(5,0) not null, 
-r_regionname char(20) not null,
-r_regionlanguage char(20) not null )"""
+r_regionName char(20) not null,
+r_regionLanguage char(20) not null )"""
     _conn.execute(sql)
     _conn.commit()
 
-    sql = """CREATE TABLE demographic(d_demographicid decimal(5,0) not null, 
-d_demographicname decimal(5,0) not null )"""
+    sql = """CREATE TABLE demographic(d_demographicId decimal(5,0) not null, 
+d_demographicName decimal(5,0) not null )"""
     _conn.execute(sql)
     _conn.commit()
     
