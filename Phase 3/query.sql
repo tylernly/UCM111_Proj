@@ -77,12 +77,13 @@ SELECT " ";
 
 SELECT "7----------";
 --Find the the team with the most cost effective video being the ratio of (cost/views)
-SELECT m_teamname, (v_videocost/v_videoviews) as Effectiveness
-FROM video, project , marketing
+SELECT m_teamname, max(v_videocost/v_videoviews) * 1.0 as Effectiveness
+FROM video, project, marketing
 WHERE v_videoprojectId = p_projectId
 AND p_teamId = m_teamId
 GROUP BY m_teamname
-ORDER BY Effectiveness DESC;
+ORDER BY Effectiveness DESC
+LIMIT 1;
 
 SELECT " ";
 ---------------------
@@ -186,14 +187,14 @@ SELECT DISTINCT(r_regionName)
 FROM region
 WHERE r_regionId not in (SELECT r_regionId 
                          FROM region, client, requests, reqregion
-                         WHERE c_clientname = 'MCDONALDS'
+                         WHERE c_clientname = 'Hand Inc'
                          AND r_requestid = rr_requestId
                          AND rr_regionId = r_regionId
                          AND c_clientId = r_requestclientId
                          UNION
                          SELECT r_regionId 
                          FROM region, client, requests, reqregion
-                         WHERE c_clientname = 'BURGER KING'
+                         WHERE c_clientname = 'Anderson Group'
                          AND r_requestid = rr_requestId
                          AND rr_regionId = r_regionId
                          AND c_clientId = r_requestclientId);

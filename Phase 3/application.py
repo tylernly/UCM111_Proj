@@ -367,7 +367,7 @@ def update_marketing(_conn, _id, _name):
 
 def update_requests(_conn, _id, _clientId, _budget):
     try:
-        sql = """UPDATE requests SET r_requestClientId = ?, r_requestBudget = ? WHERE request_id = ?;"""
+        sql = """UPDATE requests SET r_requestClientId = ?, r_requestBudget = ? WHERE r_requestId = ?;"""
         args = [_clientId, _budget, _id]
         _conn.execute(sql, args)
         
@@ -436,7 +436,7 @@ def update_demographic(_conn, _id, _name):
 def update_reqRegion(_conn, _requestId, _regionId, new_requestId, new_regionId):
     try:
         sql = """UPDATE reqRegion SET rr_requestId = ?, rr_regionId = ?
-        WHERE rr_requestId = ? AND rr_regionId;"""
+        WHERE rr_requestId = ? AND rr_regionId = ?;"""
         args = [new_requestId, new_regionId, _requestId, _regionId]
         _conn.execute(sql, args)
         
@@ -449,7 +449,7 @@ def update_reqRegion(_conn, _requestId, _regionId, new_requestId, new_regionId):
 def update_reqDemo(_conn, _requestId, _demographicId, new_requestId, new_demographicId):
     try:
         sql = """UPDATE reqDemo SET rd_requestId = ?, rd_demographicId = ?
-        WHERE rd_requestId = ? AND rd_demographicId;"""
+        WHERE rd_requestId = ? AND rd_demographicId = ?;"""
         args = [new_requestId,new_demographicId, _requestId, _demographicId]
         _conn.execute(sql, args)
         
@@ -484,6 +484,7 @@ def delete_marketing(_conn, _id):
         print(e)
 
 def delete_requests(_conn, _id):
+    print("TEST")
     try:
         sql = """DELETE FROM requests WHERE r_requestId = ?;""" 
         args = [_id]
@@ -666,16 +667,16 @@ class MainWindow(QMainWindow):
             elif(self.input.text() == "4"):
                 #run presetSQL
                 self.text.setText("""1) List projects who did not cover all of the requested regions
-2)Find the top 10 teams with the most cost effective video being the ratio of (cost/views)
-3)Client name for biggest request budget
+2)Find the regions who have not been targeted by Hand Inc or Anderson Group
+3)Find the top 10 client who have set the biggest request budget
 4)Delete projects that have gone over budget
-5)For all of the marketing teams, determine their most
-  profitable regions and demographics and the clients
-  who made the most requests for these. The amount of
-  money made per view is different for each platform,
-  $0.05 for computer, $0.12 for television ads, and 
-  $0.09 for phone ads. The profit by finding the amount
-  made and subtracting their cost.
+5)For the marketing teams who have targeted all platforms,
+  determine their most profitable regions and demographics
+  and the clients who made the most requests for these regions
+  and demographics. The amount of money made per view is
+  different for each platform, $0.05 for computer, $0.12 for
+  television ads, and $0.09 for phone ads. The profit by
+  finding the amount made and subtracting their cost.
 e) back to main screen""")
                 self.menu.setText("4");
 
@@ -1284,11 +1285,12 @@ e) back to main screen""")
             self.menu.setText("0")
             self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count 6)search")
 
-        #delete request
+        #delete requests
         elif(self.menu.text() == "23"):
             self.ID.setText(self.input.text())
-            delete_request(conn,self.ID.text())
+            delete_requests(conn,self.ID.text())
             self.query.setText("deleted request")
+            print("END")
             self.menu.setText("0")
             self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count 6)search")
 
@@ -1351,19 +1353,19 @@ e) back to main screen""")
         elif(self.menu.text() == "3"):
             if(self.input.text() == "1"):
                 self.menu.setText("31")
-                self.text.setText("enter the ID number of the new client")
+                self.text.setText("enter the ID number of the client to update")
             elif(self.input.text() == "2"):
                 self.menu.setText("32")
-                self.text.setText("enter the ID number of the new marketing team")
+                self.text.setText("enter the ID number of the marketing team to update")
             elif(self.input.text() == "3"):
                 self.menu.setText("33")
-                self.text.setText("enter the ID number of the new request")
+                self.text.setText("enter the ID number of the request to update")
             elif(self.input.text() == "4"):
                 self.menu.setText("34")
-                self.text.setText("enter the ID number of the new region")
+                self.text.setText("enter the ID number of the region to update")
             elif(self.input.text() == "5"):
                 self.menu.setText("35")
-                self.text.setText("enter the ID number the demographic")
+                self.text.setText("enter the ID number the demographic to update")
             elif(self.input.text() == "6"):
                 self.menu.setText("36")
                 self.text.setText("enter the request ID")
@@ -1408,7 +1410,7 @@ e) back to main screen""")
         elif(self.menu.text() == "33"):
             self.ID.setText(self.input.text())
             self.text.setText("enter the client ID of the request")
-            self.menu.setText("131")
+            self.menu.setText("331")
 
         elif(self.menu.text() == "331"):
             self.ID2.setText(self.input.text())
@@ -1539,7 +1541,15 @@ e) back to main screen""")
             self.menu.setText("371")
         elif(self.menu.text() == "371"):
             self.ID2.setText(self.input.text())
-            update_reqDemo(conn,self.ID.text(),self.ID2.text())
+            self.text.setText("enter new request ID")
+            self.menu.setText("372")
+        elif(self.menu.text() == "372"):
+            self.ID3.setText(self.input.text())
+            self.text.setText("enter new demographic region ID")
+            self.menu.setText("373")
+        elif(self.menu.text() == "373"):
+            self.ID4.setText(self.input.text())
+            update_reqDemo(conn,self.ID.text(),self.ID2.text(),self.ID3.text(),self.ID4.text())
             self.query.setText("updated request/demographic")
             self.menu.setText("0")
             self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count 6)search")
@@ -1550,8 +1560,16 @@ e) back to main screen""")
             self.text.setText("enter the ID of the Region")
             self.menu.setText("361")
         elif(self.menu.text() == "361"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter new request ID")
+            self.menu.setText("362")
+        elif(self.menu.text() == "362"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter new region ID")
+            self.menu.setText("363")
+        elif(self.menu.text() == "363"):
             self.ID2.setText(self.input.text())
-            update_reqRegion(conn,self.ID.text(),self.ID2.text())
+            update_reqRegion(conn,self.ID.text(),self.ID2.text(),self.ID3.text(),self.ID4.text())
             self.query.setText("updated request/region")
             self.menu.setText("0")
             self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count 6)search")
@@ -1562,7 +1580,7 @@ e) back to main screen""")
         elif(self.menu.text() == "4"):
             if(self.input.text() == "1"):
                 try:
-                    sql = """SELECT p1.p_projectid, m_teamName
+                    sql = """SELECT DISTINCT p1.p_projectid, m_teamName
 FROM marketing, project as p1,
 (
     SELECT rr_regionId, p_projectid
@@ -1575,7 +1593,7 @@ FROM marketing, project as p1,
     ORDER BY p_projectid ASC
 ) as incomplete
 WHERE m_teamID = p1.p_projectid
-AND p1.p_projectid = incomplete.p_project;"""
+AND p1.p_projectid = incomplete.p_projectId;"""
                     cur = conn.cursor()
                     cur.execute(sql)
                     l = '{:<30} {:<30}'.format("project id", "marketing team")
@@ -1595,21 +1613,29 @@ AND p1.p_projectid = incomplete.p_project;"""
 
             if(self.input.text() == "2"):
                 try:
-                    sql = """SELECT m_teamname, (v_videocost/v_videoviews) as Effectiveness
-FROM video, project , marketing
-WHERE v_videoprojectId = p_projectId
-AND p_teamId = m_teamId
-GROUP BY m_teamname
-ORDER BY Effectiveness DESC
-LIMIT 10;"""
+                    sql = """SELECT DISTINCT(r_regionName)
+FROM region
+WHERE r_regionId not in (SELECT r_regionId 
+                         FROM region, client, requests, reqregion
+                         WHERE c_clientname = "Hand Inc"
+                         AND r_requestid = rr_requestId
+                         AND rr_regionId = r_regionId
+                         AND c_clientId = r_requestclientId
+                         UNION
+                         SELECT r_regionId 
+                         FROM region, client, requests, reqregion
+                         WHERE c_clientname = "Anderson Group"
+                         AND r_requestid = rr_requestId
+                         AND rr_regionId = r_regionId
+                         AND c_clientId = r_requestclientId);"""
                     cur = conn.cursor()
                     cur.execute(sql)
-                    l = '{:<30} {:<30}'.format("marketing team", "effectiency")
+                    l = '{:<30}'.format("regions not targeted")
                     output = l
                     print(l)
                     rows = cur.fetchall()
                     for row in rows:
-                        l = '{:<30} {:<30}'.format(row[0], row[1])
+                        l = '{:<30}'.format(row[0])
                         print(l)
                         output = output + "\n" + l
 
@@ -1623,11 +1649,12 @@ LIMIT 10;"""
 
             if(self.input.text() == "3"):
                 try:
-                    sql = """SELECT c_clientname, max(r_requestbudget)
+                    sql = """SELECT c_clientname, max(r_requestbudget) as bestBudget
 FROM client, requests
 WHERE c_clientid = r_requestclientid
-AND r_requestbudget = (SELECT max(r_requestbudget) FROM requests)
-GROUP BY c_clientname;"""
+GROUP BY c_clientname
+ORDER BY bestBudget DESC
+LIMIT 10;"""
                     cur = conn.cursor()
                     cur.execute(sql)
                     l = '{:<30} {:<30}'.format("client name", "biggest budget")
