@@ -58,8 +58,8 @@ m_teamname char(100) not null)"""
 
     sql = """CREATE TABLE project(p_projectid decimal(5,0) not null, 
 p_teamId decimal(5,0) not null,
-p_projectrequestId decimal(5,0) not null,
-p_projectcost decimal(10,0) not null)"""
+p_projectRequestId decimal(5,0) not null,
+p_projectCost decimal(10,0) not null)"""
     _conn.execute(sql)
     _conn.commit()
 
@@ -147,7 +147,56 @@ def populateTable(_conn):
     print("Populate table")
 
     cursor = _conn.cursor()
-    file = open(newdata/CSE111clients.csv)
+    file = open("newdata/CSE111clients.csv")
+    contents = csv.reader(file)
+    sql = """INSERT INTO client(c_clientId, c_clientName) 
+        VALUES (?,?);"""
+    cursor.executemany(sql,contents)
+    file = open("newdata/CSE111marketing.csv")
+    contents = csv.reader(file)
+    sql = """INSERT INTO marketing(m_teamId, m_teamName) 
+        VALUES (?,?);"""
+    cursor.executemany(sql,contents)
+    file = open("newdata/CSE111requests.csv")
+    contents = csv.reader(file)
+    sql = """INSERT INTO requests(r_requestId, r_requestClientId, r_requestBudget) 
+        VALUES (?,?,?);"""
+    cursor.executemany(sql,contents)
+    file = open("newdata/CSE111regions.csv")
+    contents = csv.reader(file)
+    sql = """INSERT INTO region(r_regionId, r_regionName, r_regionLanguage) 
+        VALUES (?,?,?);"""
+    cursor.executemany(sql,contents)
+    file = open("newdata/CSE111demographics.csv")
+    contents = csv.reader(file)
+    sql = """INSERT INTO demographic(d_demographicId, d_demographicName) 
+        VALUES (?,?);"""
+    cursor.executemany(sql,contents)
+    file = open("newdata/CSE111reqRegion.csv")
+    contents = csv.reader(file)
+    sql = """INSERT INTO reqRegion(rr_regionId, rr_requestId) 
+        VALUES (?,?);"""
+    cursor.executemany(sql,contents)
+    file = open("newdata/CSE111reqDemo.csv")
+    contents = csv.reader(file)
+    sql = """INSERT INTO reqDemo(rd_requestId, rd_demographicId) 
+        VALUES (?,?);"""
+    cursor.executemany(sql,contents)
+    file = open("newdata/CSE111projects.csv")
+    contents = csv.reader(file)
+    sql = """INSERT INTO project(p_projectId, p_teamId,
+                                p_projectRequestId, p_projectCost) 
+        VALUES (?,?,?,?);"""
+    cursor.executemany(sql,contents)
+    file = open("newdata/CSE111video.csv", encoding="utf8")
+    contents = csv.reader(file)
+    sql = """INSERT INTO video(v_videoId, v_videoFile, v_videoDuration,
+                                   v_videoPlatform, v_videoViews, v_videoLanguage,
+                                   v_videoCost, v_videoRegionId, v_videoDemographicId,
+                                   v_videoProjectId) 
+        VALUES (?,?,?,?,?,?,?,?,?,?);"""
+    cursor.executemany(sql,contents)
+    
     sql = """.mode "csv"
             .separator ","
             .headers off
@@ -162,10 +211,362 @@ def populateTable(_conn):
             .import  'newdata/CSE111reqDemo.csv' reqDemo
             .import  'newdata/CSE111projects.csv' project
             .import  'newdata/CSE111video.csv' video"""
-    _conn.execute(sql)
     _conn.commit()
     
     print("++++++++++++++++++++++++++++++++++")
+
+def insert_client(_conn, _id, _name):
+    print("TEST")
+    try:
+        sql = """INSERT INTO client(c_clientId, c_clientName) 
+        VALUES (?,?);"""
+        args = [_id, _name]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def insert_marketing(_conn, _id, _name):
+    print("TEST")
+    try:
+        sql = """INSERT INTO marketing(m_teamId, m_teamName) 
+        VALUES (?,?);"""
+        args = [_id, _name]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def insert_requests(_conn, _id, _clientId, _budget):
+    try:
+        sql = """INSERT INTO requests(r_requestId, r_requestClientId, r_requestBudget) 
+        VALUES (?,?,?);"""
+        args = [_id, _clientId, _budget]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def insert_project(_conn, _id, _teamId, _requestId, _cost):
+    try:
+        sql = """INSERT INTO project(p_projectId, p_teamId,
+                                p_projectRequestId, p_projectCost) 
+        VALUES (?,?,?,?);"""
+        args = [_id, _teamId, _requestId, _cost]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def insert_video(_conn, _id, _file, _duration, _platform, _views,
+                _language, _cost, _regionId, _demographicId, _projectId):
+    try:
+        sql = """INSERT INTO video(v_videoId, v_videoFile, v_videoDuration,
+                                   v_videoPlatform, v_videoViews, v_videoLanguage,
+                                   v_videoCost, v_videoRegionId, v_videoDemographicId
+                                   , v_videoProjectId) 
+        VALUES (?,?,?,?,?,?,?,?,?, ?);"""
+        args = [_id, _file, _duration, _platform, _views,
+                _language, _cost, _regionId, _demographicId, _projectId]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def insert_region(_conn, _id, _name, _language):
+    try:
+        sql = """INSERT INTO region(r_reigonId, r_regionName, r_regionLanguage) 
+        VALUES (?,?,?);"""
+        args = [_id, _name, _language]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+
+def insert_demographic(_conn, _id, _name):
+    try:
+        sql = """INSERT INTO demographic(d_demographicId, d_demographicName) 
+        VALUES (?,?);"""
+        args = [_id, _name]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def insert_reqDemo(_conn, _requestId, _demographicId):
+    try:
+        sql = """INSERT INTO reqDemo(rd_requestId, rd_demographicId) 
+        VALUES (?,?);"""
+        args = [_requestId, _demographicId]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def insert_reqRegion(_conn, _requestId, _regionId):
+    try:
+        sql = """INSERT INTO reqRegion(rr_requestId, rr_regionId) 
+        VALUES (?,?);"""
+        args = [_requestId, _regionId]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def update_client(_conn, _id, _name):
+    try:
+        sql = """UPDATE client SET c_clientName = ? WHERE c_client_id = ?;"""
+        args = [_name,_id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def update_marketing(_conn, _id, _name):
+    try:
+        sql = """UPDATE marketing SET m_teamName = ? WHERE m_teamId = ?;"""
+        args = [_name, _id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def update_requests(_conn, _id, _clientId, _budget):
+    try:
+        sql = """UPDATE requests SET r_requestClientId = ?, r_requestBudget = ? WHERE request_id = ?;"""
+        args = [_clientId, _budget, _id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def update_project(_conn, _id, _teamId, _requestId, _cost):
+    try:
+        sql = """UPDATE project SET p_teamId = ?,
+                 p_projectrequestId = ?, p_projectCost = ? WHERE p_projectId = ?;"""
+        args = [_teamId, _requestId, _cost, _id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def update_video(_conn, _id, _file, _duration, _platform, _views,
+                _language, _cost, _regionId, _demographicId, _projectId):
+    try:
+        sql = """UPDATE video SET v_videoFile = ?, v_videoDuration = ?,
+                                   v_videoPlatform = ?, v_videoViews = ?, v_videoLanguage = ?,
+                                   v_videoCost = ?, v_videoRegionId = ?, v_videoDemographicId = ?,
+                                   v_projectId = ?
+                                   WHERE v_videoId = ?"""
+        args = [_file, _duration, _platform, _views,
+                _language, _cost, _regionId, _demographicId, _projectId, _id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def update_region(_conn, _id, _name, _language):
+    try:
+        sql = """UPDATE region SET region_name = ?, region_language = ? WHERE reigon_id = ?;"""
+        args = [_name, _language, _id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+
+def update_demographic(_conn, _id, _name):
+    try:
+        sql = """UPDATE demographic SET demographic_name = ? WHERE demographic_id = ?;""" 
+        args = [_name, _id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def update_reqRegion(_conn, _requestId, _regionId, new_requestId, new_regionId):
+    try:
+        sql = """UPDATE reqRegion SET rr_requestId = ?, rr_regionId = ?
+        WHERE rr_requestId = ? AND rr_regionId;"""
+        args = [new_requestId, new_regionId, _requestId, _regionId]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def update_reqDemo(_conn, _requestId, _demographicId, new_requestId, new_demographicId):
+    try:
+        sql = """UPDATE reqDemo SET rd_requestId = ?, rd_demographicId = ?
+        WHERE rd_requestId = ? AND rd_demographicId;"""
+        args = [new_requestId,new_demographicId, _requestId, _demographicId]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def delete_client(_conn, _id):
+    try:
+        sql = """DELETE FROM client WHERE client_id = ?;"""
+        args = [_id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def delete_marketing(_conn, _id):
+    try:
+        sql = """DELETE FROM marketing WHERE marketing_id =?;"""
+        args = [_id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def delete_requests(_conn, _id):
+    try:
+        sql = """DELETE FROM requests WHERE request_id = ?;""" 
+        args = [_id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def delete_project(_conn, _id):
+    try:
+        sql = """DELETE FROM project WHERE project_id = ?;"""
+        args = [_id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def delete_video(_conn, _id):
+    try:
+        sql = """DELETE FROM video WHERE video_id = ?;""" 
+        args = [_id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def delete_region(_conn, _id):
+    try:
+        sql = """DELETE FROM region WHERE reigon_id = ?;"""
+        args = [_id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+
+def delete_demographic(_conn, _id):
+    try:
+        sql = """DELETE FROM demographic WHERE demographic_id = ?;"""
+        args = [_id]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def delete_reqDemo(_conn, _requestId, _demographicId):
+    try:
+        sql = """DELETE FROM reqDemo WHERE rd_requestId = ? AND rd_demographicId = ?;""" 
+        args = [_requestId, _demographicId]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
+
+def delete_reqRegion(_conn, _requestId, _regionId):
+    try:
+        sql = """DELETE FROM reqRegion WHERE rr_requestId = ? AND rr_regionId = ?;"""
+        args = [_requestId, _regionId]
+        _conn.execute(sql, args)
+        
+        _conn.commit()
+        print("success")
+    except Error as e:
+        _conn.rollback()
+        print(e)
 
 
 class MainWindow(QMainWindow):
@@ -174,10 +575,10 @@ class MainWindow(QMainWindow):
 
         # create a database connection
         conn = openConnection(database)
-        #with conn:
-            #dropTable(conn)
-            #createTable(conn)
-            #populateTable(conn)
+        with conn:
+            dropTable(conn)
+            createTable(conn)
+            populateTable(conn)
 
         closeConnection(conn, database)
         
@@ -187,10 +588,20 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("advertisement database")
 
         #creates the objects
-        self.text = QLabel("1)insert 2)remove 3)update 4)run preset SQLs")
+        self.text = QLabel("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
         self.button = QPushButton("Enter")
         self.input = QLineEdit()
         self.menu = QLabel("0")
+        self.ID = QLabel("")
+        self.ID2 = QLabel("")
+        self.ID3 = QLabel("")
+        self.ID4 = QLabel("")
+        self.name = QLabel("")
+        self.money = QLabel("")
+        self.number = QLabel("")
+        self.number2 = QLabel("")
+        self.platform = QLabel("")
+        self.language = QLabel("")
         self.query = QLabel("")
         self.button.clicked.connect(self.the_button_was_clicked)
 
@@ -215,21 +626,47 @@ class MainWindow(QMainWindow):
         if(self.menu.text() == "0"):
             if(self.input.text() == "1"):
                 #insert
-                print("Clicked!")
-                self.text.setText("inserting screen")
-                print("Clicked!")
+                self.text.setText("""inserting screen, select a table to add to
+                                  1)client
+                                  2)marketing
+                                  3)requests
+                                  4)region
+                                  5)demographic
+                                  6)reqRegion
+                                  7)reqDemo
+                                  8)project
+                                  9)video""")
+                self.menu.setText("1")
             elif(self.input.text() == "2"):
                 #remove
-                self.text.setText("removing screen")
+                self.text.setText("""deleting screen, select a table to remove from
+                                  1)client
+                                  2)marketing
+                                  3)requests
+                                  4)region
+                                  5)demographic
+                                  6)reqRegion
+                                  7)reqDemo
+                                  8)project
+                                  9)video""")
             elif(self.input.text() == "3"):
                 #update
-                self.text.setText("updating screen")
+                self.text.setText("""updating screen, select a table to update
+                                  1)client
+                                  2)marketing
+                                  3)requests
+                                  4)region
+                                  5)demographic
+                                  6)reqRegion
+                                  7)reqDemo
+                                  8)project
+                                  9)video""")
             elif(self.input.text() == "4"):
                 #run presetSQL
                 self.text.setText("""1)
 2)
 3)
-4)All regions (debug)
+4)Delete projects that have gone over budget
 5)For all of the marketing teams, determine their most
 --profitable regions and demographics and the clients
 --who made the most requests for these. The amount of
@@ -239,12 +676,612 @@ class MainWindow(QMainWindow):
 --made and subtracting their cost.
 e) back to main screen""")
                 self.menu.setText("4");
+
+                    #counting screen
+            elif(self.input.text() == "5"):
+                try:
+                    output = "client: "
+                    sql = "SELECT COUNT(*)FROM client"
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<10}'.format(row[0])
+                        output = output + l;
+                    sql = "SELECT COUNT(*)FROM marketing"
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<10}'.format(row[0])
+                        output = output + "\n marketing: " + l
+                    sql = "SELECT COUNT(*)FROM requests"
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<10}'.format(row[0])
+                        output = output + "\n requests: " + l
+                    sql = "SELECT COUNT(*)FROM region"
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<10}'.format(row[0])
+                        output = output + "\n region: " + l
+                    sql = "SELECT COUNT(*)FROM demographic"
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<10}'.format(row[0])
+                        output = output + "\n demographic: " + l
+                    sql = "SELECT COUNT(*)FROM reqRegion"
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<10}'.format(row[0])
+                        output = output + "\n reqRegion: " + l
+                    sql = "SELECT COUNT(*)FROM reqDemo"
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<10}'.format(row[0])
+                        output = output + "\n reqDemo: " + l
+                    sql = "SELECT COUNT(*)FROM project"
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<10}'.format(row[0])
+                        output = output + "\n project: " + l
+                    sql = "SELECT COUNT(*)FROM video"
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<10}'.format(row[0])
+                        output = output + "\n video" + l
+
+                    print(output)
+                    self.query.setText(output)
+
+                except Error as e:
+                    conn.rollback()
+                    print(e)
+                
+                
+        #inserting screen
         elif(self.menu.text() == "1"):
-            self.text.setText("type the table you would like to insert into")
+            if(self.input.text() == "1"):
+                self.menu.setText("11")
+                self.text.setText("enter the ID number of the new client")
+            elif(self.input.text() == "2"):
+                self.menu.setText("12")
+                self.text.setText("enter the ID number of the new marketing team")
+            elif(self.input.text() == "3"):
+                self.menu.setText("13")
+                self.text.setText("enter the ID number of the new request")
+            elif(self.input.text() == "4"):
+                self.menu.setText("14")
+                self.text.setText("enter the ID number of the new region")
+            elif(self.input.text() == "5"):
+                self.menu.setText("15")
+                self.text.setText("enter the ID number the demographic")
+            elif(self.input.text() == "6"):
+                self.menu.setText("16")
+                self.text.setText("enter the request ID")
+            elif(self.input.text() == "7"):
+                self.menu.setText("17")
+                self.text.setText("enter the request ID")
+            elif(self.input.text() == "8"):
+                self.menu.setText("18")
+                self.text.setText("enter the ID number of the new project")
+            elif(self.input.text() == "9"):
+                self.menu.setText("19")
+                self.text.setText("enter the ID number of the video")
+
+        #insert client
+        elif(self.menu.text() == "11"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the name of the client")
+            self.menu.setText("111")
+
+        elif(self.menu.text() == "111"):
+            self.name.setText(self.input.text())
+            insert_client(conn,self.ID.text(),self.name.text())
+            self.query.setText("added client")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+            
+
+        #insert marketing
+        elif(self.menu.text() == "12"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the name of the marketing team")
+            self.menu.setText("121")
+
+        elif(self.menu.text() == "121"):
+            self.name.setText(self.input.text())
+            insert_marketing(conn,self.ID.text(),self.name.text())
+            self.query.setText("added marketing team")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #insert request
+        elif(self.menu.text() == "13"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the client ID of the request")
+            self.menu.setText("131")
+
+        elif(self.menu.text() == "131"):
+            self.ID2.setText(self.input.text())
+            self.text.setText("enter the budget of the request")
+            self.menu.setText("132")
+            
+        elif(self.menu.text() == "132"):
+            self.money.setText(self.input.text())
+            insert_requests(conn,self.ID.text(),self.ID2.text(),self.money.text())
+            self.query.setText("added request")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #insert project
+        elif(self.menu.text() == "18"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the ID of the marketing team")
+            self.menu.setText("181")
+
+        elif(self.menu.text() == "181"):
+            self.ID2.setText(self.input.text())
+            self.text.setText("enter the ID of the request")
+            self.menu.setText("182")
+
+        elif(self.menu.text() == "182"):
+            self.ID3.setText(self.input.text())
+            self.text.setText("enter the cost of the project")
+            self.menu.setText("183")
+
+        elif(self.menu.text() == "183"):
+            self.money.setText(self.input.text())
+            insert_project(conn,self.ID.text(),self.ID2.text(),self.ID3.text(),self.money.text())
+            self.query.setText("added project")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #insert video
+        elif(self.menu.text() == "19"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the video file name")
+            self.menu.setText("191")
+
+        elif(self.menu.text() == "191"):
+            self.name.setText(self.input.text())
+            self.text.setText("enter the duration")
+            self.menu.setText("192")
+
+        elif(self.menu.text() == "192"):
+            self.number.setText(self.input.text())
+            self.text.setText("enter the platform name")
+            self.menu.setText("193")
+
+        elif(self.menu.text() == "193"):
+            self.platform.setText(self.input.text())
+            self.text.setText("enter the number of views the video got")
+            self.menu.setText("194")
+
+        elif(self.menu.text() == "194"):
+            self.number2.setText(self.input.text())
+            self.text.setText("enter the language")
+            self.menu.setText("195")
+
+        elif(self.menu.text() == "195"):
+            self.language.setText(self.input.text())
+            self.text.setText("enter the cost")
+            self.menu.setText("196")
+
+        elif(self.menu.text() == "196"):
+            self.money.setText(self.input.text())
+            self.text.setText("enter the region ID")
+            self.menu.setText("197")
+
+        elif(self.menu.text() == "197"):
+            self.ID2.setText(self.input.text())
+            self.text.setText("enter the demographic ID")
+            self.menu.setText("198")
+
+        elif(self.menu.text() == "198"):
+            self.ID3.setText(self.input.text())
+            self.text.setText("enter the project ID")
+            self.menu.setText("199")
+
+        elif(self.menu.text() == "199"):
+            self.ID4.setText(self.input.text())
+            insert_video(conn,self.ID.text(),self.name.text(),
+                           self.number.text(),self.platform.text(),
+                           self.number2.text(),self.language.text(),
+                           self.money.text(),self.ID2.text(),
+                           self.ID3.text(),self.ID4.text())
+            self.query.setText("added video")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #insert region
+        elif(self.menu.text() == "14"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the name of the region")
+            self.menu.setText("141")
+
+        elif(self.menu.text() == "141"):
+            self.name.setText(self.input.text())
+            self.text.setText("enter the language of the region")
+            self.menu.setText("142")
+
+        elif(self.menu.text() == "142"):
+            self.language.setText(self.input.text())
+            insert_region(conn,self.ID.text(),self.name.text(),self.language.text())
+            self.query.setText("added region")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #insert demographic
+        elif(self.menu.text() == "15"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the name of the demographic")
+            self.menu.setText("151")
+        elif(self.menu.text() == "151"):
+            self.name.setText(self.input.text())
+            insert_demographic(conn,self.ID.text(),self.name.text())
+            self.query.setText("added demographic")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #insert reqDemo
+        elif(self.menu.text() == "17"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter ID of the demographic")
+            self.menu.setText("171")
+        elif(self.menu.text() == "171"):
+            self.ID2.setText(self.input.text())
+            insert_reqDemo(conn,self.ID.text(),self.ID2.text())
+            self.query.setText("added request/demographic")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #insert reqRegion
+        elif(self.menu.text() == "16"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the ID of the Region")
+            self.menu.setText("161")
+        elif(self.menu.text() == "161"):
+            self.ID2.setText(self.input.text())
+            insert_reqRegion(conn,self.ID.text(),self.ID2.text())
+            self.query.setText("added request/region")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #delete screen
         elif(self.menu.text() == "2"):
-            self.text.setText("type the table you would like to remove from")
+            if(self.input.text() == "1"):
+                self.menu.setText("21")
+                self.text.setText("enter the ID number of the client to delete")
+            elif(self.input.text() == "2"):
+                self.menu.setText("22")
+                self.text.setText("enter the ID number of the marketing team to delete")
+            elif(self.input.text() == "3"):
+                self.menu.setText("23")
+                self.text.setText("enter the ID number of the request to delete")
+            elif(self.input.text() == "4"):
+                self.menu.setText("24")
+                self.text.setText("enter the ID number of the region to delete")
+            elif(self.input.text() == "5"):
+                self.menu.setText("25")
+                self.text.setText("enter the ID number of the demographic to delete")
+            elif(self.input.text() == "6"):
+                self.menu.setText("26")
+                self.text.setText("enter the request ID of the request/region")
+            elif(self.input.text() == "7"):
+                self.menu.setText("27")
+                self.text.setText("enter the request ID of the request/demographic")
+            elif(self.input.text() == "8"):
+                self.menu.setText("28")
+                self.text.setText("enter the ID number of the project to delete")
+            elif(self.input.text() == "9"):
+                self.menu.setText("29")
+                self.text.setText("enter the ID number of the video to delete")
+        #delete client
+        elif(self.menu.text() == "21"):
+            self.ID.setText(self.input.text())
+            delete_client(conn,self.ID.text())
+            self.query.setText("deleted client")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #delete marketing
+        elif(self.menu.text() == "22"):
+            self.ID.setText(self.input.text())
+            delete_marketing(conn,self.ID.text())
+            self.query.setText("deleted marketing")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #delete request
+        elif(self.menu.text() == "23"):
+            self.ID.setText(self.input.text())
+            delete_request(conn,self.ID.text())
+            self.query.setText("deleted request")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #delete region
+        elif(self.menu.text() == "24"):
+            self.ID.setText(self.input.text())
+            delete_region(conn,self.ID.text())
+            self.query.setText("deleted region")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #delete demographic
+        elif(self.menu.text() == "25"):
+            self.ID.setText(self.input.text())
+            delete_demographic(conn,self.ID.text())
+            self.query.setText("deleted demographic")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+                                
+        #delete reqRegion
+        elif(self.menu.text() == "26"):
+            self.ID.setText(self.input.text())
+            self.menu.setText("261")
+        elif(self.menu.text() == "261"):
+            self.ID2.setText(self.input.text())
+            delete_reqRegion(conn,self.ID.text(),self.ID2.text())
+            self.query.setText("deleted request/region")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #delete reqDemographic
+        elif(self.menu.text() == "27"):
+            self.ID.setText(self.input.text())
+            self.menu.setText("271")
+        elif(self.menu.text() == "271"):
+            self.ID2.setText(self.input.text())
+            delete_reqDemo(conn,self.ID.text(),self.ID2.text())
+            self.query.setText("deleted request/demographic")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")               
+
+        #delete project
+        elif(self.menu.text() == "28"):
+            self.ID.setText(self.input.text())
+            delete_project(conn,self.ID.text())
+            self.query.setText("deleted project")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+                                
+        #delete video
+        elif(self.menu.text() == "29"):
+            self.ID.setText(self.input.text())
+            delete_video(conn,self.ID.text())
+            self.query.setText("deleted project")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+                                
+        
+        #updating screen
         elif(self.menu.text() == "3"):
-            self.text.setText("type the table you would like to update from")
+            if(self.input.text() == "1"):
+                self.menu.setText("31")
+                self.text.setText("enter the ID number of the new client")
+            elif(self.input.text() == "2"):
+                self.menu.setText("32")
+                self.text.setText("enter the ID number of the new marketing team")
+            elif(self.input.text() == "3"):
+                self.menu.setText("33")
+                self.text.setText("enter the ID number of the new request")
+            elif(self.input.text() == "4"):
+                self.menu.setText("34")
+                self.text.setText("enter the ID number of the new region")
+            elif(self.input.text() == "5"):
+                self.menu.setText("35")
+                self.text.setText("enter the ID number the demographic")
+            elif(self.input.text() == "6"):
+                self.menu.setText("36")
+                self.text.setText("enter the request ID")
+            elif(self.input.text() == "7"):
+                self.menu.setText("37")
+                self.text.setText("enter the request ID")
+            elif(self.input.text() == "8"):
+                self.menu.setText("38")
+                self.text.setText("enter the ID number of the new project")
+            elif(self.input.text() == "9"):
+                self.menu.setText("39")
+                self.text.setText("enter the ID number of the video")
+
+        #update client
+        elif(self.menu.text() == "31"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the name of the client")
+            self.menu.setText("311")
+
+        elif(self.menu.text() == "311"):
+            self.name.setText(self.input.text())
+            update_client(conn,self.ID.text(),self.name.text())
+            self.query.setText("updated client")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+            
+
+        #update marketing
+        elif(self.menu.text() == "32"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the name of the marketing team")
+            self.menu.setText("321")
+
+        elif(self.menu.text() == "321"):
+            self.name.setText(self.input.text())
+            update_marketing(conn,self.ID.text(),self.name.text())
+            self.query.setText("updated marketing team")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #update request
+        elif(self.menu.text() == "33"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the client ID of the request")
+            self.menu.setText("131")
+
+        elif(self.menu.text() == "331"):
+            self.ID2.setText(self.input.text())
+            self.text.setText("enter the budget of the request")
+            self.menu.setText("332")
+            
+        elif(self.menu.text() == "332"):
+            self.money.setText(self.input.text())
+            update_requests(conn,self.ID.text(),self.ID2.text(),self.money.text())
+            self.query.setText("updated request")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #update project
+        elif(self.menu.text() == "38"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the ID of the marketing team")
+            self.menu.setText("381")
+
+        elif(self.menu.text() == "381"):
+            self.ID2.setText(self.input.text())
+            self.text.setText("enter the ID of the request")
+            self.menu.setText("382")
+
+        elif(self.menu.text() == "382"):
+            self.ID3.setText(self.input.text())
+            self.text.setText("enter the cost of the project")
+            self.menu.setText("383")
+
+        elif(self.menu.text() == "383"):
+            self.money.setText(self.input.text())
+            update_project(conn,self.ID.text(),self.ID2.text(),self.ID3.text(),self.money.text())
+            self.query.setText("updated project")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #update video
+        elif(self.menu.text() == "39"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the video file name")
+            self.menu.setText("391")
+
+        elif(self.menu.text() == "391"):
+            self.name.setText(self.input.text())
+            self.text.setText("enter the duration")
+            self.menu.setText("392")
+
+        elif(self.menu.text() == "392"):
+            self.number.setText(self.input.text())
+            self.text.setText("enter the platform name")
+            self.menu.setText("393")
+
+        elif(self.menu.text() == "393"):
+            self.platform.setText(self.input.text())
+            self.text.setText("enter the number of views the video got")
+            self.menu.setText("394")
+
+        elif(self.menu.text() == "394"):
+            self.number2.setText(self.input.text())
+            self.text.setText("enter the language")
+            self.menu.setText("395")
+
+        elif(self.menu.text() == "395"):
+            self.language.setText(self.input.text())
+            self.text.setText("enter the cost")
+            self.menu.setText("396")
+
+        elif(self.menu.text() == "396"):
+            self.money.setText(self.input.text())
+            self.text.setText("enter the region ID")
+            self.menu.setText("397")
+
+        elif(self.menu.text() == "397"):
+            self.ID2.setText(self.input.text())
+            self.text.setText("enter the demographic ID")
+            self.menu.setText("398")
+
+        elif(self.menu.text() == "398"):
+            self.ID3.setText(self.input.text())
+            self.text.setText("enter the project ID")
+            self.menu.setText("399")
+
+        elif(self.menu.text() == "399"):
+            self.ID4.setText(self.input.text())
+            updated_video(conn,self.ID.text(),self.name.text(),
+                           self.number.text(),self.platform.text(),
+                           self.number2.text(),self.language.text(),
+                           self.money.text(),self.ID2.text(),
+                           self.ID3.text(),self.ID4.text())
+            self.query.setText("updated video")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #update region
+        elif(self.menu.text() == "34"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the name of the region")
+            self.menu.setText("341")
+
+        elif(self.menu.text() == "341"):
+            self.name.setText(self.input.text())
+            self.text.setText("enter the language of the region")
+            self.menu.setText("342")
+
+        elif(self.menu.text() == "342"):
+            self.language.setText(self.input.text())
+            update_region(conn,self.ID.text(),self.name.text(),self.language.text())
+            self.query.setText("updated region")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #update demographic
+        elif(self.menu.text() == "35"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the name of the demographic")
+            self.menu.setText("351")
+        elif(self.menu.text() == "351"):
+            self.name.setText(self.input.text())
+            update_demographic(conn,self.ID.text(),self.name.text())
+            self.query.setText("updated demographic")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #update reqDemo
+        elif(self.menu.text() == "37"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter ID of the demographic")
+            self.menu.setText("371")
+        elif(self.menu.text() == "371"):
+            self.ID2.setText(self.input.text())
+            update_reqDemo(conn,self.ID.text(),self.ID2.text())
+            self.query.setText("updated request/demographic")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+        #update reqRegion
+        elif(self.menu.text() == "36"):
+            self.ID.setText(self.input.text())
+            self.text.setText("enter the ID of the Region")
+            self.menu.setText("361")
+        elif(self.menu.text() == "361"):
+            self.ID2.setText(self.input.text())
+            update_reqRegion(conn,self.ID.text(),self.ID2.text())
+            self.query.setText("updated request/region")
+            self.menu.setText("0")
+            self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+
+
+
+        #preset query screen
         elif(self.menu.text() == "4"):
             if(self.input.text() == "1"):
                 #run query
@@ -253,26 +1290,54 @@ e) back to main screen""")
                 #run query
                 self.query.setText("test")
             if(self.input.text() == "3"):
-                
+                #run query
                 self.query.setText("test")
             if(self.input.text() == "4"):
                 try:
-                    sql = """SELECT * FROM region"""
+                    sql = """SELECT COUNT(p_projectId)
+FROM project"""
                     cur = conn.cursor()
                     cur.execute(sql)
-                    l = '{:>10} {:>10} {:>10}'.format("ID", "region", "language")
-                    output = l
+                    l = '{:>10}'.format("Count of remaining")
+                    output = "BEFORE \n " + l
                     print(l)
                     rows = cur.fetchall()
                     for row in rows:
-                        l = '{:>10} {:>10} {:>10}'.format(row[0], row[1], row[2])
+                        l = '{:>10}'.format(row[0])
                         print(l)
                         output = output + "\n" + l
 
                     self.query.setText(output)
+                    
+                    sql = """DELETE FROM project
+WHERE p_projectid in (SELECT p_projectid
+FROM project, requests
+WHERE p_projectcost > r_requestbudget
+AND p_projectrequestId = r_requestId)"""
+                    conn.execute(sql)
+                    conn.commit()
+
+                    output = output + "\n Removed projects with cost over budget";
+
+                    sql = """SELECT COUNT(p_projectId)
+FROM project"""
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    l = '{:>10}'.format("Count of remaining")
+                    output = output + "\n AFTER \n" + l
+                    print(l)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:>10}'.format(row[0])
+                        print(l)
+                        output = output + "\n" + l
+
+                    self.query.setText(output)
+
                 except Error as e:
                     conn.rollback()
                     print(e)
+
                 
             if(self.input.text() == "5"):
                 try:
@@ -332,7 +1397,6 @@ AND mProfitTable.d_demographicName = mRequestedTable.d_demographicName;"""
                     print(l)
                     rows = cur.fetchall()
                     for row in rows:
-                        print("test")
                         l = '{:>30} {:>30} {:>30} {:>30}'.format(row[0], row[1], row[2], row[3])
                         print(l)
                         output = output + "\n" + l
@@ -345,9 +1409,10 @@ AND mProfitTable.d_demographicName = mRequestedTable.d_demographicName;"""
                 
             
             if(self.input.text() == "e"):
-                self.menu.setText("0");
+                self.menu.setText("0")
                 self.query.setText("")
-                self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs")
+                self.text.setText("1)insert 2)remove 3)update 4)run preset SQLs 5)count")
+            
 
         self.input.setText("")
           
@@ -355,6 +1420,8 @@ AND mProfitTable.d_demographicName = mRequestedTable.d_demographicName;"""
 app = QApplication(sys.argv)
 
 window = MainWindow()
+window.setFixedHeight(750)
+window.setFixedWidth(1000)
 window.show()
 
 app.exec()

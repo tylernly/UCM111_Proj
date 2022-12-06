@@ -497,7 +497,7 @@ def main():
     with conn:
         dropTable(conn)
         createTable(conn)
-        populateTable(conn)
+        #populateTable(conn)
 
     closeConnection(conn, database)
 

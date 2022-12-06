@@ -39,14 +39,15 @@ def insert_project(_conn, _id, _teamId, _requestId, _cost):
         print(e)
 
 def insert_video(_conn, _id, _file, _duration, _platform, _views,
-                _language, _cost, _regionId, _demographicId):
+                _language, _cost, _regionId, _demographicId, _projectId):
     try:
         sql = """INSERT INTO video(v_videoId, v_videoFile, v_videoDuration,
                                    v_videoPlatform, v_videoViews, v_videoLanguage,
-                                   v_videoCost, v_videoRegionId, v_videoDemographicId) 
-        VALUES (?,?,?,?,?,?,?,?,?);"""
+                                   v_videoCost, v_videoRegionId, v_videoDemographicId
+                                   v_projectId) 
+        VALUES (?,?,?,?,?,?,?,?,?,?);"""
         args = [_id, _file, _duration, _platform, _views,
-                _language, _cost, _regionId, _demographicId]
+                _language, _cost, _regionId, _demographicId, _projectId]
         _conn.execute(sql, args)
         
         _conn.commit()
