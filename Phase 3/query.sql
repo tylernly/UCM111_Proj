@@ -77,13 +77,12 @@ SELECT " ";
 
 SELECT "7----------";
 --Find the the team with the most cost effective video being the ratio of (cost/views)
-SELECT m_teamname, max(v_videocost/v_videoviews) * 1.0 as Effectiveness
+SELECT m_teamname, (v_videocost/v_videoviews) as Effectiveness
 FROM video, project , marketing
 WHERE v_videoprojectId = p_projectId
 AND p_teamId = m_teamId
 GROUP BY m_teamname
-ORDER BY Effectiveness DESC
-LIMIT 1;
+ORDER BY Effectiveness DESC;
 
 SELECT " ";
 ---------------------

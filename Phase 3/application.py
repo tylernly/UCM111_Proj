@@ -275,9 +275,9 @@ def insert_video(_conn, _id, _file, _duration, _platform, _views,
     try:
         sql = """INSERT INTO video(v_videoId, v_videoFile, v_videoDuration,
                                    v_videoPlatform, v_videoViews, v_videoLanguage,
-                                   v_videoCost, v_videoRegionId, v_videoDemographicId
-                                   , v_videoProjectId) 
-        VALUES (?,?,?,?,?,?,?,?,?, ?);"""
+                                   v_videoCost, v_videoRegionId, v_videoDemographicId,
+                                   v_videoProjectId) 
+        VALUES (?,?,?,?,?,?,?,?,?,?);"""
         args = [_id, _file, _duration, _platform, _views,
                 _language, _cost, _regionId, _demographicId, _projectId]
         _conn.execute(sql, args)
@@ -343,7 +343,7 @@ def insert_reqRegion(_conn, _requestId, _regionId):
 
 def update_client(_conn, _id, _name):
     try:
-        sql = """UPDATE client SET c_clientName = ? WHERE c_client_id = ?;"""
+        sql = """UPDATE client SET c_clientName = ? WHERE c_clientId = ?;"""
         args = [_name,_id]
         _conn.execute(sql, args)
         
@@ -380,7 +380,7 @@ def update_requests(_conn, _id, _clientId, _budget):
 def update_project(_conn, _id, _teamId, _requestId, _cost):
     try:
         sql = """UPDATE project SET p_teamId = ?,
-                 p_projectrequestId = ?, p_projectCost = ? WHERE p_projectId = ?;"""
+                 p_projectRequestId = ?, p_projectCost = ? WHERE p_projectId = ?;"""
         args = [_teamId, _requestId, _cost, _id]
         _conn.execute(sql, args)
         
@@ -410,7 +410,7 @@ def update_video(_conn, _id, _file, _duration, _platform, _views,
 
 def update_region(_conn, _id, _name, _language):
     try:
-        sql = """UPDATE region SET region_name = ?, region_language = ? WHERE reigon_id = ?;"""
+        sql = """UPDATE region SET r_regionName = ?, r_regionLanguage = ? WHERE r_regionId = ?;"""
         args = [_name, _language, _id]
         _conn.execute(sql, args)
         
@@ -423,7 +423,7 @@ def update_region(_conn, _id, _name, _language):
 
 def update_demographic(_conn, _id, _name):
     try:
-        sql = """UPDATE demographic SET demographic_name = ? WHERE demographic_id = ?;""" 
+        sql = """UPDATE demographic SET d_demographicName = ? WHERE d_demographicId = ?;""" 
         args = [_name, _id]
         _conn.execute(sql, args)
         
@@ -461,7 +461,7 @@ def update_reqDemo(_conn, _requestId, _demographicId, new_requestId, new_demogra
 
 def delete_client(_conn, _id):
     try:
-        sql = """DELETE FROM client WHERE client_id = ?;"""
+        sql = """DELETE FROM client WHERE c_clientId = ?;"""
         args = [_id]
         _conn.execute(sql, args)
         
@@ -473,7 +473,7 @@ def delete_client(_conn, _id):
 
 def delete_marketing(_conn, _id):
     try:
-        sql = """DELETE FROM marketing WHERE marketing_id =?;"""
+        sql = """DELETE FROM marketing WHERE m_teamId =?;"""
         args = [_id]
         _conn.execute(sql, args)
         
@@ -485,7 +485,7 @@ def delete_marketing(_conn, _id):
 
 def delete_requests(_conn, _id):
     try:
-        sql = """DELETE FROM requests WHERE request_id = ?;""" 
+        sql = """DELETE FROM requests WHERE r_requestId = ?;""" 
         args = [_id]
         _conn.execute(sql, args)
         
@@ -497,7 +497,7 @@ def delete_requests(_conn, _id):
 
 def delete_project(_conn, _id):
     try:
-        sql = """DELETE FROM project WHERE project_id = ?;"""
+        sql = """DELETE FROM project WHERE p_projectId = ?;"""
         args = [_id]
         _conn.execute(sql, args)
         
@@ -509,7 +509,7 @@ def delete_project(_conn, _id):
 
 def delete_video(_conn, _id):
     try:
-        sql = """DELETE FROM video WHERE video_id = ?;""" 
+        sql = """DELETE FROM video WHERE v_videoId = ?;""" 
         args = [_id]
         _conn.execute(sql, args)
         
@@ -521,7 +521,7 @@ def delete_video(_conn, _id):
 
 def delete_region(_conn, _id):
     try:
-        sql = """DELETE FROM region WHERE reigon_id = ?;"""
+        sql = """DELETE FROM region WHERE r_regionId = ?;"""
         args = [_id]
         _conn.execute(sql, args)
         
@@ -534,7 +534,7 @@ def delete_region(_conn, _id):
 
 def delete_demographic(_conn, _id):
     try:
-        sql = """DELETE FROM demographic WHERE demographic_id = ?;"""
+        sql = """DELETE FROM demographic WHERE d_demographicId = ?;"""
         args = [_id]
         _conn.execute(sql, args)
         
@@ -663,17 +663,17 @@ class MainWindow(QMainWindow):
                                   9)video""")
             elif(self.input.text() == "4"):
                 #run presetSQL
-                self.text.setText("""1)
-2)
-3)
+                self.text.setText("""1) List projects who did not cover all of the requested regions
+2)Find the top 10 teams with the most cost effective video being the ratio of (cost/views)
+3)Client name for biggest request budget
 4)Delete projects that have gone over budget
 5)For all of the marketing teams, determine their most
---profitable regions and demographics and the clients
---who made the most requests for these. The amount of
---money made per view is different for each platform,
---$0.05 for computer, $0.12 for television ads, and 
---$0.09 for phone ads. The profit by finding the amount
---made and subtracting their cost.
+  profitable regions and demographics and the clients
+  who made the most requests for these. The amount of
+  money made per view is different for each platform,
+  $0.05 for computer, $0.12 for television ads, and 
+  $0.09 for phone ads. The profit by finding the amount
+  made and subtracting their cost.
 e) back to main screen""")
                 self.menu.setText("4");
 
@@ -1284,26 +1284,102 @@ e) back to main screen""")
         #preset query screen
         elif(self.menu.text() == "4"):
             if(self.input.text() == "1"):
-                #run query
-                self.query.setText("test")
+                try:
+                    sql = """SELECT p1.p_projectid, m_teamName
+FROM marketing, project as p1,
+(
+    SELECT rr_regionId, p_projectid
+    FROM reqRegion, project
+    WHERE rr_requestId = p_projectrequestId
+    EXCEPT
+    SELECT v_videoregionId, p_projectid
+    FROM project, video
+    WHERE v_videoprojectId = p_projectid
+    ORDER BY p_projectid ASC
+) as incomplete
+WHERE m_teamID = p1.p_projectid
+AND p1.p_projectid = incomplete.p_project;"""
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    l = '{:<30} {:<30}'.format("project id", "marketing team")
+                    output = l
+                    print(l)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<30} {:<30}'.format(row[0], row[1])
+                        print(l)
+                        output = output + "\n" + l
+
+                    self.query.setText(output)
+                                    
+                except Error as e:
+                    conn.rollback()
+                    print(e)
+
             if(self.input.text() == "2"):
-                #run query
-                self.query.setText("test")
+                try:
+                    sql = """SELECT m_teamname, (v_videocost/v_videoviews) as Effectiveness
+FROM video, project , marketing
+WHERE v_videoprojectId = p_projectId
+AND p_teamId = m_teamId
+GROUP BY m_teamname
+ORDER BY Effectiveness DESC
+LIMIT 10;"""
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    l = '{:<30} {:<30}'.format("marketing team", "effectiency")
+                    output = l
+                    print(l)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<30} {:<30}'.format(row[0], row[1])
+                        print(l)
+                        output = output + "\n" + l
+
+                    self.query.setText(output)
+                                    
+                except Error as e:
+                    conn.rollback()
+                    print(e)
+                    
+
+
             if(self.input.text() == "3"):
-                #run query
-                self.query.setText("test")
+                try:
+                    sql = """SELECT c_clientname, max(r_requestbudget)
+FROM client, requests
+WHERE c_clientid = r_requestclientid
+AND r_requestbudget = (SELECT max(r_requestbudget) FROM requests)
+GROUP BY c_clientname;"""
+                    cur = conn.cursor()
+                    cur.execute(sql)
+                    l = '{:<30} {:<30}'.format("client name", "biggest budget")
+                    output = l
+                    print(l)
+                    rows = cur.fetchall()
+                    for row in rows:
+                        l = '{:<30} {:<30}'.format(row[0], row[1])
+                        print(l)
+                        output = output + "\n" + l
+
+                    self.query.setText(output)
+
+                except Error as e:
+                    conn.rollback()
+                    print(e)
+                    
             if(self.input.text() == "4"):
                 try:
                     sql = """SELECT COUNT(p_projectId)
 FROM project"""
                     cur = conn.cursor()
                     cur.execute(sql)
-                    l = '{:>10}'.format("Count of remaining")
+                    l = '{:<10}'.format("Count of remaining")
                     output = "BEFORE \n " + l
                     print(l)
                     rows = cur.fetchall()
                     for row in rows:
-                        l = '{:>10}'.format(row[0])
+                        l = '{:<10}'.format(row[0])
                         print(l)
                         output = output + "\n" + l
 
@@ -1323,12 +1399,12 @@ AND p_projectrequestId = r_requestId)"""
 FROM project"""
                     cur = conn.cursor()
                     cur.execute(sql)
-                    l = '{:>10}'.format("Count of remaining")
+                    l = '{:<10}'.format("Count of remaining")
                     output = output + "\n AFTER \n" + l
                     print(l)
                     rows = cur.fetchall()
                     for row in rows:
-                        l = '{:>10}'.format(row[0])
+                        l = '{:<10}'.format(row[0])
                         print(l)
                         output = output + "\n" + l
 
@@ -1390,14 +1466,14 @@ WHERE mProfitTable.r_regionName = mRequestedTable.r_regionName
 AND mProfitTable.d_demographicName = mRequestedTable.d_demographicName;"""
                     cur = conn.cursor()
                     cur.execute(sql)
-                    l = '{:>30} {:>30} {:>30} {:>30}'.format("marketing", "most profitable region",
-                                               "most profitable demographic",
+                    l = '{:<30} {:<30} {:<30} {:<30}'.format("marketing", "most profitable region",
+                                               "most profitable demographic", "profit",
                                                "desired client")
                     output = l
                     print(l)
                     rows = cur.fetchall()
                     for row in rows:
-                        l = '{:>30} {:>30} {:>30} {:>30}'.format(row[0], row[1], row[2], row[3])
+                        l = '{:<30} {:<30} {:<30} {:<30}'.format(row[0], row[1], row[2], row[3], row[4])
                         print(l)
                         output = output + "\n" + l
 
